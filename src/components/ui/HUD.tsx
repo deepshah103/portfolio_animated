@@ -1,16 +1,36 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useGameStore } from '@/stores/gameStore';
+import { ZONES } from '@/data/zones';
 
 export function HUD() {
-  const { controlMode, currentZone } = useGameStore();
+  const { controlMode, currentZone, isInteracting, startInteraction } = useGameStore();
+
+  const zone = currentZone ? ZONES.find((z) => z.id === currentZone) : null;
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if ((e.code === 'KeyE' || e.code === 'Space') && currentZone && !isInteracting) {
+        startInteraction();
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [currentZone, isInteracting, startInteraction]);
+
+  if (isInteracting) return null;
 
   return (
     <div className="absolute inset-0 pointer-events-none z-10">
-      {/* Zone indicator */}
-      {currentZone && (
-        <div className="absolute top-6 left-1/2 -translate-x-1/2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-md">
-          <p className="text-sm font-medium text-gray-700">{currentZone}</p>
+      {/* Zone interaction prompt */}
+      {zone && (
+        <div className="absolute top-6 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-sm px-5 py-2.5 rounded-xl shadow-md animate-pulse">
+          <p className="text-sm font-medium text-gray-700">
+            <span className="mr-2">{zone.icon}</span>
+            {zone.description}
+            <span className="ml-3 px-2 py-0.5 bg-blue-100 text-blue-600 rounded text-xs font-bold">E</span>
+          </p>
         </div>
       )}
 
@@ -20,17 +40,22 @@ export function HUD() {
           {controlMode === 'ai' ? (
             'Press WASD to take control'
           ) : (
-            'WASD to move • E to interact • Wait to release control'
+            'WASD move • E interact'
           )}
         </p>
       </div>
 
-      {/* Mode indicator */}
-      <div className="absolute top-6 right-6 flex items-center gap-2">
-        <div className={`w-2 h-2 rounded-full ${controlMode === 'ai' ? 'bg-green-400' : 'bg-blue-400'}`} />
-        <span className="text-xs text-gray-500 bg-white/70 backdrop-blur-sm px-2 py-1 rounded">
-          {controlMode === 'ai' ? 'Auto' : 'You'}
-        </span>
+      {/* Mode indicator + accessible link */}
+      <div className="absolute top-6 right-6 flex items-center gap-3">
+        <a href="/flat" className="text-xs text-gray-400 bg-white/70 backdrop-blur-sm px-2 py-1 rounded hover:text-gray-600 pointer-events-auto">
+          Text View
+        </a>
+        <div className="flex items-center gap-2">
+          <div className={`w-2 h-2 rounded-full ${controlMode === 'ai' ? 'bg-green-400' : 'bg-blue-400'}`} />
+          <span className="text-xs text-gray-500 bg-white/70 backdrop-blur-sm px-2 py-1 rounded">
+            {controlMode === 'ai' ? 'Auto' : 'You'}
+          </span>
+        </div>
       </div>
     </div>
   );

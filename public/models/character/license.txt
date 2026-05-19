@@ -1,0 +1,11 @@
+Model Information:
+* title:	Small humanoid robot with antennas
+* source:	https://sketchfab.com/3d-models/small-humanoid-robot-with-antennas-9b386a0d4eec46dfabd62c6bd915e6e1
+* author:	norberto4d (https://sketchfab.com/norberto4d)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Small humanoid robot with antennas" (https://sketchfab.com/3d-models/small-humanoid-robot-with-antennas-9b386a0d4eec46dfabd62c6bd915e6e1) by norberto4d (https://sketchfab.com/norberto4d) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

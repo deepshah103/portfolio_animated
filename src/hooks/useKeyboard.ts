@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { ZONES } from '@/data/zones';
+import { useGameStore } from '@/stores/gameStore';
 
 interface KeyState {
   forward: boolean;
@@ -8,6 +10,8 @@ interface KeyState {
   left: boolean;
   right: boolean;
   interact: boolean;
+  mobileX: number;
+  mobileZ: number;
 }
 
 export function useKeyboard() {
@@ -17,6 +21,8 @@ export function useKeyboard() {
     left: false,
     right: false,
     interact: false,
+    mobileX: 0,
+    mobileZ: 0,
   });
 
   useEffect(() => {
@@ -42,6 +48,16 @@ export function useKeyboard() {
         case 'Space':
           keys.current.interact = true;
           break;
+      }
+
+      // Teleport shortcuts: keys 1-8
+      const num = parseInt(e.key);
+      if (num >= 1 && num <= ZONES.length) {
+        const zone = ZONES[num - 1];
+        const store = useGameStore.getState();
+        store.setCharacterPosition(zone.interactionPoint);
+        store.setControlMode('user');
+        store.updateLastInputTime();
       }
     };
 
@@ -70,12 +86,22 @@ export function useKeyboard() {
       }
     };
 
+    // Poll mobile input
+    const mobileInterval = setInterval(() => {
+      const mobileInput = ((window as unknown) as { __mobileInput?: { x: number; z: number } }).__mobileInput;
+      if (mobileInput) {
+        keys.current.mobileX = mobileInput.x || 0;
+        keys.current.mobileZ = mobileInput.z || 0;
+      }
+    }, 16);
+
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
+      clearInterval(mobileInterval);
     };
   }, []);
 

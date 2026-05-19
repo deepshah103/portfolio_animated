@@ -311,18 +311,217 @@ function SkillShelf() {
   );
 }
 
+function CeilingLight() {
+  return (
+    <group position={[0, 3.9, 0]}>
+      {/* Fixture base */}
+      <mesh>
+        <cylinderGeometry args={[0.3, 0.3, 0.05, 16]} />
+        <meshStandardMaterial color="#ffffff" roughness={0.5} />
+      </mesh>
+      {/* Hanging rod */}
+      <mesh position={[0, -0.3, 0]}>
+        <cylinderGeometry args={[0.01, 0.01, 0.6, 6]} />
+        <meshStandardMaterial color="#aaa" metalness={0.9} roughness={0.2} />
+      </mesh>
+      {/* Shade */}
+      <mesh position={[0, -0.65, 0]}>
+        <cylinderGeometry args={[0.15, 0.25, 0.2, 16, 1, true]} />
+        <meshStandardMaterial color="#f5f0e8" roughness={0.9} side={2} />
+      </mesh>
+      {/* Bulb glow */}
+      <mesh position={[0, -0.6, 0]}>
+        <sphereGeometry args={[0.06, 8, 8]} />
+        <meshStandardMaterial color="#fff5dd" emissive="#fff0cc" emissiveIntensity={2} />
+      </mesh>
+    </group>
+  );
+}
+
+function Rug() {
+  return (
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]} receiveShadow>
+      <circleGeometry args={[3, 32]} />
+      <meshStandardMaterial color="#8b6b4a" roughness={1} />
+    </mesh>
+  );
+}
+
+function Curtain({ position }: { position: [number, number, number] }) {
+  return (
+    <group position={position}>
+      {/* Curtain rod */}
+      <mesh position={[0, 3.5, 0]} rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[0.02, 0.02, 3.5, 6]} />
+        <meshStandardMaterial color="#8b7355" metalness={0.6} roughness={0.4} />
+      </mesh>
+      {/* Fabric left */}
+      <mesh position={[-0.8, 2.2, 0]} castShadow>
+        <boxGeometry args={[0.5, 2.5, 0.04]} />
+        <meshStandardMaterial color="#e8e0d4" roughness={0.95} />
+      </mesh>
+      {/* Fabric right */}
+      <mesh position={[0.8, 2.2, 0]} castShadow>
+        <boxGeometry args={[0.5, 2.5, 0.04]} />
+        <meshStandardMaterial color="#e8e0d4" roughness={0.95} />
+      </mesh>
+    </group>
+  );
+}
+
+function SecondPlant() {
+  return (
+    <group position={[-9, 0, -8]}>
+      <mesh position={[0, 0.15, 0]} castShadow>
+        <cylinderGeometry args={[0.15, 0.12, 0.3, 8]} />
+        <meshStandardMaterial color="#ddd" roughness={0.8} />
+      </mesh>
+      <mesh position={[0, 0.5, 0]} castShadow>
+        <sphereGeometry args={[0.25, 8, 8]} />
+        <meshStandardMaterial color="#3a7a3a" roughness={0.9} />
+      </mesh>
+    </group>
+  );
+}
+
+function Bed() {
+  return (
+    <group position={[7, 0, 6]}>
+      {/* Bed frame */}
+      <mesh position={[0, 0.25, 0]} castShadow receiveShadow>
+        <boxGeometry args={[1.8, 0.3, 2.2]} />
+        <meshStandardMaterial color="#5c3d2e" roughness={0.8} />
+      </mesh>
+
+      {/* Mattress */}
+      <mesh position={[0, 0.45, 0]} castShadow>
+        <boxGeometry args={[1.6, 0.15, 2.0]} />
+        <meshStandardMaterial color="#f0f0f0" roughness={0.95} />
+      </mesh>
+
+      {/* Pillow */}
+      <mesh position={[0, 0.55, -0.7]} castShadow>
+        <boxGeometry args={[1.0, 0.12, 0.4]} />
+        <meshStandardMaterial color="#e8e8f0" roughness={0.9} />
+      </mesh>
+
+      {/* Blanket */}
+      <mesh position={[0, 0.55, 0.3]} castShadow>
+        <boxGeometry args={[1.5, 0.08, 1.2]} />
+        <meshStandardMaterial color="#4a6b8a" roughness={0.9} />
+      </mesh>
+
+      {/* Headboard */}
+      <mesh position={[0, 0.8, -1.05]} castShadow>
+        <boxGeometry args={[1.8, 0.8, 0.08]} />
+        <meshStandardMaterial color="#5c3d2e" roughness={0.7} />
+      </mesh>
+
+      {/* Bedside lamp */}
+      <group position={[-1.2, 0, -0.7]}>
+        <mesh position={[0, 0.5, 0]} castShadow>
+          <cylinderGeometry args={[0.12, 0.15, 0.5, 8]} />
+          <meshStandardMaterial color="#2a2a2a" roughness={0.5} />
+        </mesh>
+        <mesh position={[0, 0.8, 0]}>
+          <sphereGeometry args={[0.08, 8, 8]} />
+          <meshStandardMaterial color="#ffeecc" emissive="#ffddaa" emissiveIntensity={0.5} />
+        </mesh>
+      </group>
+    </group>
+  );
+}
+
+function CodingDesk() {
+  return (
+    <group position={[3, 0, -9]}>
+      {/* Desk surface */}
+      <mesh position={[0, 0.75, 0]} castShadow receiveShadow>
+        <boxGeometry args={[1.8, 0.04, 0.8]} />
+        <meshStandardMaterial color="#2a2a2a" roughness={0.5} metalness={0.3} />
+      </mesh>
+
+      {/* Desk legs (metal frame) */}
+      <mesh position={[-0.8, 0.375, -0.3]} castShadow>
+        <boxGeometry args={[0.04, 0.75, 0.04]} />
+        <meshStandardMaterial color="#1a1a1a" metalness={0.9} roughness={0.2} />
+      </mesh>
+      <mesh position={[0.8, 0.375, -0.3]} castShadow>
+        <boxGeometry args={[0.04, 0.75, 0.04]} />
+        <meshStandardMaterial color="#1a1a1a" metalness={0.9} roughness={0.2} />
+      </mesh>
+      <mesh position={[-0.8, 0.375, 0.3]} castShadow>
+        <boxGeometry args={[0.04, 0.75, 0.04]} />
+        <meshStandardMaterial color="#1a1a1a" metalness={0.9} roughness={0.2} />
+      </mesh>
+      <mesh position={[0.8, 0.375, 0.3]} castShadow>
+        <boxGeometry args={[0.04, 0.75, 0.04]} />
+        <meshStandardMaterial color="#1a1a1a" metalness={0.9} roughness={0.2} />
+      </mesh>
+
+      {/* Laptop base */}
+      <mesh position={[0, 0.79, 0.05]} castShadow>
+        <boxGeometry args={[0.7, 0.02, 0.45]} />
+        <meshStandardMaterial color="#c0c0c0" metalness={0.8} roughness={0.2} />
+      </mesh>
+
+      {/* Laptop screen */}
+      <mesh position={[0, 1.05, -0.18]} castShadow rotation={[-0.15, 0, 0]}>
+        <boxGeometry args={[0.68, 0.42, 0.015]} />
+        <meshStandardMaterial color="#1a1a1a" roughness={0.3} />
+      </mesh>
+
+      {/* Laptop screen glow (code editor) */}
+      <mesh position={[0, 1.05, -0.165]} rotation={[-0.15, 0, 0]}>
+        <boxGeometry args={[0.62, 0.36, 0.005]} />
+        <meshStandardMaterial color="#1e1e2e" emissive="#2244aa" emissiveIntensity={0.4} />
+      </mesh>
+
+      {/* Chair */}
+      <group position={[0, 0, 0.9]}>
+        {/* Seat */}
+        <mesh position={[0, 0.45, 0]} castShadow>
+          <boxGeometry args={[0.5, 0.06, 0.5]} />
+          <meshStandardMaterial color="#1a1a1a" roughness={0.6} />
+        </mesh>
+        {/* Backrest */}
+        <mesh position={[0, 0.75, -0.22]} castShadow>
+          <boxGeometry args={[0.48, 0.5, 0.05]} />
+          <meshStandardMaterial color="#1a1a1a" roughness={0.6} />
+        </mesh>
+        {/* Chair base */}
+        <mesh position={[0, 0.22, 0]} castShadow>
+          <cylinderGeometry args={[0.03, 0.03, 0.4, 6]} />
+          <meshStandardMaterial color="#333" metalness={0.9} roughness={0.2} />
+        </mesh>
+        {/* Chair star base */}
+        <mesh position={[0, 0.03, 0]}>
+          <cylinderGeometry args={[0.25, 0.25, 0.03, 5]} />
+          <meshStandardMaterial color="#333" metalness={0.9} roughness={0.2} />
+        </mesh>
+      </group>
+    </group>
+  );
+}
+
 export function World() {
   return (
     <group>
       <Floor />
       <Walls />
+      <Rug />
+      <CeilingLight />
+      <Curtain position={[9.7, 0, -2]} />
       <Desk />
+      <CodingDesk />
       <PhoneDock />
       <Whiteboard />
       <AICorner />
       <Bookshelf />
       <Lounge />
+      <Bed />
       <Plant />
+      <SecondPlant />
       <DataDashboard />
       <SkillShelf />
     </group>
