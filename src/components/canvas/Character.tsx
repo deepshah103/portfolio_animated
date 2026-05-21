@@ -7,6 +7,7 @@ import { useKeyboard } from '@/hooks/useKeyboard';
 import { useGameStore } from '@/stores/gameStore';
 import { createAIContext, updateAI, AIContext, AIPose } from '@/systems/characterAI';
 import { Html, useGLTF } from '@react-three/drei';
+import { assetPath } from '@/utils/basePath';
 
 const MOVE_SPEED = 3;
 const AI_MOVE_SPEED = 2;
@@ -20,8 +21,10 @@ const ROOM_BOUNDS = {
   maxZ: 5.5,
 };
 
+const MODEL_PATH = assetPath('/models/character/scene.gltf');
+
 function RobotModel() {
-  const { scene } = useGLTF('/models/character/scene.gltf');
+  const { scene } = useGLTF(MODEL_PATH);
   return (
     <primitive
       object={scene.clone()}
@@ -32,7 +35,7 @@ function RobotModel() {
   );
 }
 
-useGLTF.preload('/models/character/scene.gltf');
+useGLTF.preload(MODEL_PATH);
 
 const POSE_LABELS: Record<AIPose, string> = {
   idle: '',

@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useGameStore } from '@/stores/gameStore';
 import { ZONES } from '@/data/zones';
+import { assetPath } from '@/utils/basePath';
 
 export function HUD() {
   const { controlMode, currentZone, isInteracting, startInteraction } = useGameStore();
@@ -47,7 +48,7 @@ export function HUD() {
 
       {/* Mode indicator + accessible link */}
       <div className="absolute top-6 right-6 flex items-center gap-3">
-        <a href="/flat" className="text-xs text-gray-500 bg-white/80 backdrop-blur-md px-2 py-1 rounded border border-cyan-200 hover:text-cyan-600 hover:border-cyan-400 pointer-events-auto transition-colors">
+        <a href={assetPath('/flat')} className="text-xs text-gray-500 bg-white/80 backdrop-blur-md px-2 py-1 rounded border border-cyan-200 hover:text-cyan-600 hover:border-cyan-400 pointer-events-auto transition-colors">
           Text View
         </a>
         <div className="flex items-center gap-2 bg-white/80 backdrop-blur-md px-2 py-1 rounded border border-cyan-200">
