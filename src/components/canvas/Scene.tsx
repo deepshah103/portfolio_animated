@@ -35,8 +35,8 @@ export function Scene() {
       style={{ width: '100vw', height: '100vh' }}
       dpr={settings.pixelRatio}
     >
-      <color attach="background" args={['#0d0d18']} />
-      <fog attach="fog" args={['#0d0d18', 10, 20]} />
+      <color attach="background" args={['#e8f4fa']} />
+      <fog attach="fog" args={['#e8f4fa', 12, 22]} />
 
       <Suspense fallback={null}>
         <Lighting shadows={settings.shadows} />

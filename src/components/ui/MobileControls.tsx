@@ -46,7 +46,7 @@ export function MobileControls() {
 
     const dx = touch.clientX - touchState.current.startX;
     const dy = touch.clientY - touchState.current.startY;
-    const maxDist = 40;
+    const maxDist = 50;
     const dist = Math.min(Math.sqrt(dx * dx + dy * dy), maxDist);
     const angle = Math.atan2(dy, dx);
 
@@ -75,7 +75,7 @@ export function MobileControls() {
       }
       const dx = touchState.current.currentX - touchState.current.startX;
       const dy = touchState.current.currentY - touchState.current.startY;
-      const maxDist = 40;
+      const maxDist = 50;
       const dist = Math.min(Math.sqrt(dx * dx + dy * dy), maxDist);
       const nx = (dx / maxDist) * (dist / maxDist);
       const nz = (dy / maxDist) * (dist / maxDist);
@@ -90,25 +90,32 @@ export function MobileControls() {
   return (
     <div className="absolute bottom-0 left-0 right-0 z-10 pointer-events-none">
       <div className="flex justify-between items-end p-6">
-        {/* Joystick */}
-        <div
-          ref={joystickRef}
-          className="w-28 h-28 rounded-full bg-black/50 backdrop-blur-sm border-2 border-cyan-500/40 flex items-center justify-center pointer-events-auto shadow-[0_0_15px_rgba(0,200,255,0.1)]"
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-        >
+        {/* Joystick with directional arrows */}
+        <div className="relative">
           <div
-            ref={knobRef}
-            className="w-12 h-12 rounded-full bg-cyan-500/40 border border-cyan-400/60 shadow-[0_0_10px_rgba(0,200,255,0.3)] transition-transform duration-75"
-          />
+            ref={joystickRef}
+            className="w-32 h-32 rounded-full bg-white/70 backdrop-blur-sm border-2 border-cyan-300 flex items-center justify-center pointer-events-auto shadow-[0_0_20px_rgba(0,200,255,0.2)]"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
+            {/* Direction indicators */}
+            <span className="absolute top-2 left-1/2 -translate-x-1/2 text-cyan-400/60 text-xs select-none">W</span>
+            <span className="absolute bottom-2 left-1/2 -translate-x-1/2 text-cyan-400/60 text-xs select-none">S</span>
+            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-cyan-400/60 text-xs select-none">A</span>
+            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-cyan-400/60 text-xs select-none">D</span>
+            <div
+              ref={knobRef}
+              className="w-14 h-14 rounded-full bg-cyan-400/70 border-2 border-cyan-500 shadow-[0_0_12px_rgba(0,200,255,0.4)] transition-transform duration-75"
+            />
+          </div>
         </div>
 
         {/* Interact button */}
         {currentZone && (
           <button
             onClick={() => startInteraction()}
-            className="w-16 h-16 rounded-full bg-cyan-500/80 text-gray-950 font-bold text-lg shadow-[0_0_20px_rgba(0,200,255,0.4)] pointer-events-auto active:scale-90 transition-transform border border-cyan-400/60"
+            className="w-16 h-16 rounded-full bg-cyan-500 text-white font-bold text-lg shadow-[0_0_20px_rgba(0,200,255,0.3)] pointer-events-auto active:scale-90 transition-transform border border-cyan-400"
           >
             E
           </button>

@@ -24,6 +24,7 @@ const ZONE_POSES: Record<string, AIPose> = {
   'data-dashboard': 'examining',
   'bookshelf': 'examining',
   'skill-shelf': 'examining',
+  'couch': 'sit',
 };
 
 export function createAIContext(): AIContext {

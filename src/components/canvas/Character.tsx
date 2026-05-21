@@ -220,7 +220,7 @@ export function Character() {
       {/* Activity status bubble */}
       {label && controlMode === 'ai' && (
         <Html position={[0, 1.2, 0]} center distanceFactor={5} style={{ pointerEvents: 'none' }}>
-          <div className="bg-black/80 backdrop-blur-sm px-3 py-1 rounded-full shadow-[0_0_10px_rgba(0,200,255,0.2)] text-xs font-medium text-cyan-300 whitespace-nowrap border border-cyan-500/30">
+          <div className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-[0_0_10px_rgba(0,200,255,0.2)] text-xs font-medium text-cyan-700 whitespace-nowrap border border-cyan-300">
             {label}
           </div>
         </Html>

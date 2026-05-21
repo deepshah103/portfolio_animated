@@ -32,13 +32,13 @@ export function FollowCamera() {
 
     const charPos = new Vector3(...characterPosition);
 
-    const offset = new Vector3(0, 3.5, 4.5);
-    const desiredPos = charPos.clone().add(offset);
+    const offset = new Vector3(0, 5, 5);
+    const desiredPos = clampCamera(charPos.clone().add(offset));
 
     targetPosition.current.lerp(desiredPos, LERP_FACTOR);
     camera.position.copy(targetPosition.current);
 
-    const lookAt = charPos.clone().add(new Vector3(0, 0, 0));
+    const lookAt = charPos.clone().add(new Vector3(0, -0.5, -1));
     targetLookAt.current.lerp(lookAt, LERP_FACTOR);
     camera.lookAt(targetLookAt.current);
   });
