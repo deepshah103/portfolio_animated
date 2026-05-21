@@ -14,10 +14,10 @@ const ROTATION_SPEED = 8;
 const AI_RETURN_DELAY = 10000;
 
 const ROOM_BOUNDS = {
-  minX: -9,
-  maxX: 9,
-  minZ: -9,
-  maxZ: 9,
+  minX: -6,
+  maxX: 6,
+  minZ: -5.5,
+  maxZ: 5.5,
 };
 
 function RobotModel() {
@@ -25,8 +25,8 @@ function RobotModel() {
   return (
     <primitive
       object={scene.clone()}
-      scale={[1.8, 1.8, 1.8]}
-      position={[0, 0.55, 0]}
+      scale={[1.0, 1.0, 1.0]}
+      position={[0, 0.05, 0]}
       castShadow
     />
   );
@@ -62,12 +62,12 @@ export function Character() {
     controlMode,
     setControlMode,
     updateLastInputTime,
-    lastInputTime,
-    isInteracting,
   } = useGameStore();
 
   useFrame((_, delta) => {
     if (!meshRef.current || !bodyRef.current) return;
+
+    const { controlMode, lastInputTime, isInteracting } = useGameStore.getState();
 
     const { forward, backward, left, right, mobileX, mobileZ } = keys.current;
     const hasMobileInput = Math.abs(mobileX) > 0.1 || Math.abs(mobileZ) > 0.1;
@@ -154,16 +154,16 @@ export function Character() {
     let targetRotZ = 0;
     let targetPosY = 0;
     if (pose === 'sleep') {
-      targetRotZ = Math.PI / 2; // Lie on side
-      targetPosY = 0.5; // Raised to bed mattress height
+      targetRotZ = Math.PI / 2;
+      targetPosY = 0.35;
     } else if (pose === 'sit' || pose === 'typing') {
-      targetPosY = -0.3;
+      targetPosY = -0.15;
     } else if (pose === 'coffee') {
       targetRotX = 0.15;
     } else if (pose === 'phone') {
       targetRotX = 0.2;
     } else if (pose === 'examining') {
-      targetRotX = -0.1; // Looking up slightly
+      targetRotX = -0.1;
     }
 
     bodyRef.current.rotation.x += (targetRotX - bodyRef.current.rotation.x) * 3 * delta;
@@ -219,8 +219,8 @@ export function Character() {
 
       {/* Activity status bubble */}
       {label && controlMode === 'ai' && (
-        <Html position={[0, 2.2, 0]} center distanceFactor={6} style={{ pointerEvents: 'none' }}>
-          <div className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm text-xs font-medium text-gray-700 whitespace-nowrap">
+        <Html position={[0, 1.2, 0]} center distanceFactor={5} style={{ pointerEvents: 'none' }}>
+          <div className="bg-black/80 backdrop-blur-sm px-3 py-1 rounded-full shadow-[0_0_10px_rgba(0,200,255,0.2)] text-xs font-medium text-cyan-300 whitespace-nowrap border border-cyan-500/30">
             {label}
           </div>
         </Html>

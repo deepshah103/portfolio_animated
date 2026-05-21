@@ -93,14 +93,14 @@ export function MobileControls() {
         {/* Joystick */}
         <div
           ref={joystickRef}
-          className="w-28 h-28 rounded-full bg-white/30 backdrop-blur-sm border-2 border-white/50 flex items-center justify-center pointer-events-auto"
+          className="w-28 h-28 rounded-full bg-black/50 backdrop-blur-sm border-2 border-cyan-500/40 flex items-center justify-center pointer-events-auto shadow-[0_0_15px_rgba(0,200,255,0.1)]"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
           <div
             ref={knobRef}
-            className="w-12 h-12 rounded-full bg-white/70 shadow-lg transition-transform duration-75"
+            className="w-12 h-12 rounded-full bg-cyan-500/40 border border-cyan-400/60 shadow-[0_0_10px_rgba(0,200,255,0.3)] transition-transform duration-75"
           />
         </div>
 
@@ -108,7 +108,7 @@ export function MobileControls() {
         {currentZone && (
           <button
             onClick={() => startInteraction()}
-            className="w-16 h-16 rounded-full bg-blue-500/80 text-white font-bold text-lg shadow-lg pointer-events-auto active:scale-90 transition-transform"
+            className="w-16 h-16 rounded-full bg-cyan-500/80 text-gray-950 font-bold text-lg shadow-[0_0_20px_rgba(0,200,255,0.4)] pointer-events-auto active:scale-90 transition-transform border border-cyan-400/60"
           >
             E
           </button>

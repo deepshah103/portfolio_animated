@@ -31,12 +31,12 @@ export function Scene() {
   return (
     <Canvas
       shadows={settings.shadows}
-      camera={{ position: [0, 5, 8], fov: 50 }}
+      camera={{ position: [0, 3, 5], fov: 55 }}
       style={{ width: '100vw', height: '100vh' }}
       dpr={settings.pixelRatio}
     >
-      <color attach="background" args={['#e8f0f8']} />
-      <fog attach="fog" args={['#e8f0f8', 15, 30]} />
+      <color attach="background" args={['#0d0d18']} />
+      <fog attach="fog" args={['#0d0d18', 10, 20]} />
 
       <Suspense fallback={null}>
         <Lighting shadows={settings.shadows} />
