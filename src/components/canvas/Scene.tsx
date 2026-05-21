@@ -32,7 +32,7 @@ export function Scene() {
     <Canvas
       shadows={settings.shadows}
       camera={{ position: [0, 3, 5], fov: 55 }}
-      style={{ width: '100vw', height: '100vh' }}
+      style={{ width: '100%', height: '100%' }}
       dpr={settings.pixelRatio}
     >
       <color attach="background" args={['#e8f4fa']} />
