@@ -30,11 +30,8 @@ const INTERACTION_POSES: Record<string, AIPose> = {
 };
 
 const INTERACTION_ROTATIONS: Record<string, number> = {
-  // Bed runs along Z; lie lengthwise on it.
   bed: 0,
-  // Couch back is toward -Z, so sit facing into the room (+Z).
   couch: Math.PI,
-  // Face the coffee table / terminal.
   lounge: -Math.PI / 2,
 };
 
@@ -44,13 +41,9 @@ function RobotModel() {
     const clone = scene.clone();
     clone.updateWorldMatrix(true, true);
     const box = new Box3().setFromObject(clone);
-    const centerY = (box.min.y + box.max.y) / 2;
-    const halfHeight = (box.max.y - box.min.y) / 2;
-    return { centerY, halfHeight };
+    return { centerY: (box.min.y + box.max.y) / 2 };
   }, [scene]);
 
-  // Center the imported model on its own origin and put its feet exactly on
-  // the floor. This avoids relying on a hard-coded asset offset.
   return (
     <primitive
       object={scene.clone()}
@@ -77,20 +70,9 @@ const POSE_LABELS: Record<AIPose, string> = {
 function CoffeeMug() {
   return (
     <group position={[0.42, 0.58, 0.12]} rotation={[0.15, 0, -0.08]}>
-      <mesh castShadow>
-        <cylinderGeometry args={[0.055, 0.045, 0.1, 12]} />
-        <meshStandardMaterial color="#ffffff" roughness={0.45} />
-      </mesh>
-      <mesh position={[0.065, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[0.028, 0.008, 8, 16]} />
-        <meshStandardMaterial color="#ffffff" roughness={0.45} />
-      </mesh>
-      {[0, 1, 2].map((i) => (
-        <mesh key={i} position={[(i - 1) * 0.025, 0.095 + i * 0.018, 0]}>
-          <sphereGeometry args={[0.012, 8, 8]} />
-          <meshStandardMaterial color="#d7f7ff" emissive="#8eeeff" emissiveIntensity={0.4} transparent opacity={0.55} />
-        </mesh>
-      ))}
+      <mesh castShadow><cylinderGeometry args={[0.055, 0.045, 0.1, 12]} /><meshStandardMaterial color="#ffffff" roughness={0.45} /></mesh>
+      <mesh position={[0.065, 0, 0]} rotation={[Math.PI / 2, 0, 0]}><torusGeometry args={[0.028, 0.008, 8, 16]} /><meshStandardMaterial color="#ffffff" roughness={0.45} /></mesh>
+      {[0, 1, 2].map((i) => <mesh key={i} position={[(i - 1) * 0.025, 0.095 + i * 0.018, 0]}><sphereGeometry args={[0.012, 8, 8]} /><meshStandardMaterial color="#d7f7ff" emissive="#8eeeff" emissiveIntensity={0.4} transparent opacity={0.55} /></mesh>)}
     </group>
   );
 }
@@ -106,14 +88,7 @@ export function Character() {
   const [bobPhase, setBobPhase] = useState(0);
   const [pose, setPose] = useState<AIPose>('idle');
 
-  const {
-    setCharacterPosition,
-    setCharacterRotation,
-    setCurrentAnimation,
-    controlMode,
-    setControlMode,
-    updateLastInputTime,
-  } = useGameStore();
+  const { setCharacterPosition, setCharacterRotation, setCurrentAnimation, controlMode, setControlMode, updateLastInputTime } = useGameStore();
 
   useFrame((_, delta) => {
     if (!meshRef.current || !bodyRef.current) return;
@@ -139,9 +114,7 @@ export function Character() {
 
     const storePos = useGameStore.getState().characterPosition;
     const meshPos = meshRef.current.position;
-    const dx = Math.abs(storePos[0] - meshPos.x);
-    const dz = Math.abs(storePos[2] - meshPos.z);
-    if (dx > 2 || dz > 2) {
+    if (Math.abs(storePos[0] - meshPos.x) > 2 || Math.abs(storePos[2] - meshPos.z) > 2) {
       meshRef.current.position.set(storePos[0], 0, storePos[2]);
       velocityRef.current.set(0, 0, 0);
     }
@@ -151,7 +124,6 @@ export function Character() {
       updateLastInputTime();
       setPose('idle');
     }
-
     if (isUserInput) updateLastInputTime();
 
     if (controlMode === 'user' && !isUserInput && !isInteracting && Date.now() - lastInputTime > AI_RETURN_DELAY) {
@@ -164,18 +136,13 @@ export function Character() {
     if (isInteracting && currentZone && INTERACTION_POSES[currentZone]) {
       velocityRef.current.lerp(new Vector3(), 0.35);
       setPose(INTERACTION_POSES[currentZone]);
-      isMoving = false;
     } else if (controlMode === 'user' && !isInteracting) {
       const direction = new Vector3();
       if (forward) direction.z -= 1;
       if (backward) direction.z += 1;
       if (left) direction.x -= 1;
       if (right) direction.x += 1;
-      if (hasMobileInput) {
-        direction.x += mobileX;
-        direction.z += mobileZ;
-      }
-
+      if (hasMobileInput) { direction.x += mobileX; direction.z += mobileZ; }
       if (direction.length() > 0) {
         direction.normalize();
         targetRotation.current = Math.atan2(direction.x, direction.z);
@@ -187,16 +154,10 @@ export function Character() {
         setPose('idle');
       }
     } else if (controlMode === 'ai' && !isInteracting) {
-      const charPos: [number, number, number] = [
-        meshRef.current.position.x,
-        meshRef.current.position.y,
-        meshRef.current.position.z,
-      ];
-
+      const charPos: [number, number, number] = [meshRef.current.position.x, meshRef.current.position.y, meshRef.current.position.z];
       const result = updateAI(aiContext.current, charPos, delta);
       aiContext.current = result.ctx;
       setPose(result.pose);
-
       if (result.moveDirection) {
         const dir = new Vector3(result.moveDirection[0], 0, result.moveDirection[2]);
         targetRotation.current = Math.atan2(dir.x, dir.z);
@@ -209,20 +170,15 @@ export function Character() {
       velocityRef.current.lerp(new Vector3(), 0.2);
     }
 
-    // Pose is applied around the robot's actual model center. The center is
-    // kept above the floor, so rotations don't send feet through the ground.
     let targetRotX = 0;
-    let targetRotZ = 0;
+    const targetRotZ = 0;
     let targetPosY = 0.95;
-
     if (pose === 'sleep') {
-      // Lie flat across the mattress, with the center raised to mattress height.
       targetRotX = -Math.PI / 2;
       targetPosY = 0.78;
     } else if (pose === 'sit') {
-      // Face the room, lower onto the seat, and lean back slightly.
-      targetRotX = -0.42;
-      targetPosY = 0.62;
+      targetRotX = -0.55;
+      targetPosY = 0.9;
     } else if (pose === 'typing') {
       targetPosY = 0.87;
     } else if (pose === 'coffee') {
@@ -238,20 +194,16 @@ export function Character() {
     bodyRef.current.rotation.z += (targetRotZ - bodyRef.current.rotation.z) * 4 * delta;
     bodyRef.current.position.y += (targetPosY - bodyRef.current.position.y) * 4 * delta;
 
-    const isActivityPose = pose === 'sleep' || pose === 'sit' || pose === 'typing' || pose === 'phone' || pose === 'coffee' || pose === 'examining';
-    if (isActivityPose) {
-      velocityRef.current.set(0, 0, 0);
-      isMoving = false;
-    }
+    const isActivityPose = ['sleep', 'sit', 'typing', 'phone', 'coffee', 'examining'].includes(pose);
+    if (isActivityPose) velocityRef.current.set(0, 0, 0);
 
     const newPos = meshRef.current.position.clone().add(velocityRef.current);
     newPos.x = Math.max(ROOM_BOUNDS.minX, Math.min(ROOM_BOUNDS.maxX, newPos.x));
     newPos.z = Math.max(ROOM_BOUNDS.minZ, Math.min(ROOM_BOUNDS.maxZ, newPos.z));
     meshRef.current.position.copy(newPos);
 
-    if (pose !== 'sleep' && pose !== 'sit' && pose !== 'typing') {
-      const currentRotY = meshRef.current.rotation.y;
-      const diff = targetRotation.current - currentRotY;
+    if (!['sleep', 'sit', 'typing'].includes(pose)) {
+      const diff = targetRotation.current - meshRef.current.rotation.y;
       const wrappedDiff = ((diff + Math.PI) % (Math.PI * 2)) - Math.PI;
       meshRef.current.rotation.y += wrappedDiff * ROTATION_SPEED * delta;
     }
@@ -265,11 +217,7 @@ export function Character() {
       setCurrentAnimation(pose);
     }
 
-    setCharacterPosition([
-      meshRef.current.position.x,
-      meshRef.current.position.y,
-      meshRef.current.position.z,
-    ]);
+    setCharacterPosition([meshRef.current.position.x, meshRef.current.position.y, meshRef.current.position.z]);
     setCharacterRotation(meshRef.current.rotation.y);
   });
 
@@ -281,12 +229,9 @@ export function Character() {
         <RobotModel />
         {pose === 'coffee' && <CoffeeMug />}
       </group>
-
       {label && (controlMode === 'ai' || useGameStore.getState().isInteracting) && (
         <Html position={[0, 1.2, 0]} center distanceFactor={5} style={{ pointerEvents: 'none', zIndex: 10 }}>
-          <div className="rounded-full border border-cyan-300 bg-white/90 px-3 py-1 text-xs font-medium text-cyan-700 shadow-[0_0_10px_rgba(0,200,255,0.2)] backdrop-blur-sm">
-            {label}
-          </div>
+          <div className="rounded-full border border-cyan-300 bg-white/90 px-3 py-1 text-xs font-medium text-cyan-700 shadow-[0_0_10px_rgba(0,200,255,0.2)] backdrop-blur-sm">{label}</div>
         </Html>
       )}
     </group>
