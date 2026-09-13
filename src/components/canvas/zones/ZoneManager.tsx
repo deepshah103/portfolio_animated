@@ -10,6 +10,7 @@ import { analytics } from '@/utils/analytics';
 
 function ZoneMarker({ zone }: { zone: typeof ZONES[0] }) {
   const currentZone = useGameStore((s) => s.currentZone);
+  const uiOverlayOpen = useGameStore((s) => s.uiOverlayOpen);
   const isActive = currentZone === zone.id;
   const pulseRef = useRef<Mesh>(null);
 
@@ -26,11 +27,13 @@ function ZoneMarker({ zone }: { zone: typeof ZONES[0] }) {
         <meshStandardMaterial color={isActive ? '#22d3ee' : '#a5d8e8'} transparent opacity={isActive ? 0.7 : 0.18} emissive={isActive ? '#22d3ee' : '#000000'} emissiveIntensity={isActive ? 0.5 : 0} />
       </mesh>
 
-      <Html position={[0, 2.5, 0]} center distanceFactor={8} style={{ pointerEvents: 'none' }}>
-        <div className={`select-none rounded-full border px-3 py-1.5 text-xs font-bold whitespace-nowrap shadow-sm transition-all duration-300 ${isActive ? 'scale-110 border-cyan-400 bg-slate-950/90 text-cyan-200 shadow-[0_0_18px_rgba(34,211,238,.3)]' : 'border-white/60 bg-white/80 text-slate-600'}`}>
-          <span className="mr-1">{zone.icon}</span>{zone.name}
-        </div>
-      </Html>
+      {!uiOverlayOpen && (
+        <Html position={[0, 2.5, 0]} center distanceFactor={8} style={{ pointerEvents: 'none' }}>
+          <div className={`select-none rounded-full border px-3 py-1.5 text-xs font-bold whitespace-nowrap shadow-sm transition-all duration-300 ${isActive ? 'scale-110 border-cyan-400 bg-slate-950/90 text-cyan-200 shadow-[0_0_18px_rgba(34,211,238,.3)]' : 'border-white/60 bg-white/80 text-slate-600'}`}>
+            <span className="mr-1">{zone.icon}</span>{zone.name}
+          </div>
+        </Html>
+      )}
 
       {isActive && <mesh position={[0, 1, 0]}><cylinderGeometry args={[0.04, 0.06, 2, 8]} /><meshStandardMaterial color="#22d3ee" emissive="#22d3ee" emissiveIntensity={1} transparent opacity={0.2} /></mesh>}
     </group>
