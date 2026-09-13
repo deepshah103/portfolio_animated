@@ -1,5 +1,4 @@
 'use client';
-
 import { useEffect, useMemo, useState } from 'react';
 import { useGameStore } from '@/stores/gameStore';
 import { ZONES } from '@/data/zones';
@@ -39,7 +38,7 @@ function MiniMap({ onJump }: { onJump: (zoneId: string) => void }) {
 }
 
 export function HUD() {
-  const { controlMode, currentZone, isInteracting, startInteraction, exitActivity, setCharacterPosition, setControlMode, updateLastInputTime } = useGameStore();
+  const { controlMode, currentZone, isInteracting, startInteraction, exitActivity, setCharacterPosition, setControlMode, updateLastInputTime, setUiOverlayOpen } = useGameStore();
   const [menuOpen, setMenuOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
@@ -85,6 +84,10 @@ export function HUD() {
   }, [currentZone, isInteracting, startInteraction, exitActivity]);
 
   useEffect(() => {
+    setUiOverlayOpen(showWelcome || helpOpen || commandOpen);
+  }, [showWelcome, helpOpen, commandOpen, setUiOverlayOpen]);
+
+  useEffect(() => {
     if (!tourRunning) return;
     if (tourIndex >= TOUR_ZONES.length) { setTourRunning(false); return; }
     jumpToZone(TOUR_ZONES[tourIndex]);
@@ -118,11 +121,11 @@ export function HUD() {
       <div className="absolute bottom-5 left-1/2 -translate-x-1/2 pointer-events-auto hidden sm:flex items-center gap-2 rounded-2xl border border-white/20 bg-slate-950/75 px-3 py-2 text-[10px] text-slate-300 shadow-xl backdrop-blur-xl"><span className="font-semibold text-white">WASD</span> move <span className="text-slate-500">•</span> <span className="font-semibold text-white">E</span> interact <span className="text-slate-500">•</span> <span className="font-semibold text-white">M</span> map <span className="text-slate-500">•</span> <span className="font-semibold text-white">?</span> help</div>
       <MiniMap onJump={jumpToZone} />
 
-      {(helpOpen || showWelcome) && <div className="absolute inset-0 z-40 flex items-center justify-center bg-slate-950/45 p-6 pointer-events-auto backdrop-blur-sm"><div className="w-full max-w-lg rounded-3xl border border-cyan-200/40 bg-white/95 p-6 shadow-2xl"><div className="flex items-start justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-600">{showWelcome ? 'Welcome' : 'Controls'}</p><h2 className="mt-1 text-2xl font-bold text-slate-900">Explore the workspace</h2></div><button onClick={() => { setHelpOpen(false); finishWelcome(); }} className="rounded-full bg-slate-100 px-3 py-1 text-sm">✕</button></div><div className="mt-5 grid gap-3 sm:grid-cols-2">{[['W A S D','Move around'],['E','Explore / interact'],['M','Open navigation'],['Ctrl/⌘ + K','Command palette'],['?','Open this help'],['ESC','Close overlays']].map(([key,label]) => <div key={key} className="rounded-2xl border border-slate-200 bg-slate-50 p-3"><kbd className="rounded-lg bg-slate-900 px-2 py-1 text-xs font-bold text-white">{key}</kbd><p className="mt-2 text-sm font-medium text-slate-700">{label}</p></div>)}</div><div className="mt-5 rounded-2xl border border-cyan-100 bg-cyan-50 p-4"><p className="text-xs font-semibold text-cyan-800">Tip</p><p className="mt-1 text-sm text-cyan-900/80">Use the mini-map or Explore menu to jump directly to any room. Start a guided tour for a hands-off walkthrough.</p></div><button onClick={() => { setHelpOpen(false); finishWelcome(); }} className="mt-5 w-full rounded-xl bg-cyan-500 px-4 py-3 text-sm font-bold text-white hover:bg-cyan-600">Start exploring →</button></div></div>}
+      {(helpOpen || showWelcome) && <div className="absolute inset-0 z-[100] flex items-center justify-center bg-slate-950/55 p-6 pointer-events-auto backdrop-blur-md"><div className="relative z-[101] w-full max-w-lg rounded-3xl border border-cyan-200/40 bg-white/95 p-6 shadow-2xl"><div className="flex items-start justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-600">{showWelcome ? 'Welcome' : 'Controls'}</p><h2 className="mt-1 text-2xl font-bold text-slate-900">Explore the workspace</h2></div><button onClick={() => { setHelpOpen(false); finishWelcome(); }} className="rounded-full bg-slate-100 px-3 py-1 text-sm">✕</button></div><div className="mt-5 grid gap-3 sm:grid-cols-2">{[['W A S D','Move around'],['E','Explore / interact'],['M','Open navigation'],['Ctrl/⌘ + K','Command palette'],['?','Open this help'],['ESC','Close overlays']].map(([key,label]) => <div key={key} className="rounded-2xl border border-slate-200 bg-slate-50 p-3"><kbd className="rounded-lg bg-slate-900 px-2 py-1 text-xs font-bold text-white">{key}</kbd><p className="mt-2 text-sm font-medium text-slate-700">{label}</p></div>)}</div><div className="mt-5 rounded-2xl border border-cyan-100 bg-cyan-50 p-4"><p className="text-xs font-semibold text-cyan-800">Tip</p><p className="mt-1 text-sm text-cyan-900/80">Use the mini-map or Explore menu to jump directly to any room. Start a guided tour for a hands-off walkthrough.</p></div><button onClick={() => { setHelpOpen(false); finishWelcome(); }} className="mt-5 w-full rounded-xl bg-cyan-500 px-4 py-3 text-sm font-bold text-white hover:bg-cyan-600">Start exploring →</button></div></div>}
 
       {commandOpen && <div className="absolute inset-0 z-50 flex items-start justify-center bg-slate-950/35 p-6 pt-24 pointer-events-auto backdrop-blur-sm" onClick={() => setCommandOpen(false)}><div className="w-full max-w-xl overflow-hidden rounded-3xl border border-cyan-200/50 bg-white/95 shadow-2xl" onClick={(e) => e.stopPropagation()}><div className="border-b border-slate-200 p-4"><input autoFocus value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search rooms..." className="w-full bg-transparent text-base outline-none placeholder:text-slate-400" /></div><div className="max-h-80 overflow-y-auto p-2">{filteredZones.map((item) => <button key={item.id} onClick={() => jumpToZone(item.id)} className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left hover:bg-cyan-50"><span className="text-xl">{item.icon}</span><span className="flex-1"><span className="block text-sm font-semibold text-slate-800">{item.name}</span><span className="block text-xs text-slate-400">{item.description}</span></span><span className="text-cyan-500">↵</span></button>)}{filteredZones.length === 0 && <div className="p-6 text-center text-sm text-slate-500">No room matches that search.</div>}</div><div className="flex items-center justify-between border-t border-slate-200 px-4 py-3 text-[10px] text-slate-400"><span>Jump instantly</span><button onClick={() => { setTourIndex(0); setTourRunning(true); setCommandOpen(false); }} className="font-bold text-cyan-600 hover:text-cyan-700">Start guided tour</button></div></div></div>}
 
-      {tourRunning && <div className="absolute bottom-20 left-1/2 -translate-x-1/2 rounded-2xl border border-cyan-300/40 bg-slate-950/85 px-4 py-3 text-white shadow-xl backdrop-blur-xl pointer-events-auto"><div className="text-[10px] uppercase tracking-[0.2em] text-cyan-300">Guided tour</div><div className="mt-1 text-sm font-semibold">{ZONES.find((z) => z.id === TOUR_ZONES[Math.min(tourIndex, TOUR_ZONES.length - 1)])?.name || 'Finishing'}</div><button onClick={() => setTourRunning(false)} className="mt-2 text-[10px] text-slate-300 underline">Stop tour</button></div>}
+      {tourRunning && <div className="absolute bottom-20 left-1/2 -translate-x-1/2 rounded-2xl border border-cyan-300/40 bg-slate-950/85 px-4 py-3 text-xs text-white shadow-xl backdrop-blur-xl"><span className="font-semibold text-cyan-300">Guided tour</span><span className="mx-2 text-slate-500">•</span>Stop {Math.min(tourIndex + 1, TOUR_ZONES.length)} / {TOUR_ZONES.length}</div>}
     </div>
   );
 }
