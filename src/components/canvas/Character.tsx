@@ -6,6 +6,7 @@ import { Vector3, Group } from 'three';
 import { useKeyboard } from '@/hooks/useKeyboard';
 import { useGameStore } from '@/stores/gameStore';
 import { createAIContext, updateAI, AIContext, AIPose } from '@/systems/characterAI';
+import { ZONES } from '@/data/zones';
 import { Html, useGLTF } from '@react-three/drei';
 import { assetPath } from '@/utils/basePath';
 
@@ -22,6 +23,21 @@ const ROOM_BOUNDS = {
 };
 
 const MODEL_PATH = assetPath('/models/character/scene.gltf');
+
+const INTERACTION_POSES: Record<string, AIPose> = {
+  bed: 'sleep',
+  couch: 'sit',
+  lounge: 'coffee',
+};
+
+const INTERACTION_ROTATIONS: Record<string, number> = {
+  // Lie along the bed's long axis.
+  bed: 0,
+  // Face toward the couch back so the seated pose reads naturally.
+  couch: Math.PI,
+  // Turn toward the coffee table.
+  lounge: -Math.PI / 2,
+};
 
 function RobotModel() {
   const { scene } = useGLTF(MODEL_PATH);
@@ -41,12 +57,33 @@ const POSE_LABELS: Record<AIPose, string> = {
   idle: '',
   walk: '',
   sleep: '💤 Sleeping...',
-  sit: '💻 Coding...',
+  sit: '🛋️ Relaxing...',
   typing: '⌨️ Working...',
   phone: '📱 Checking phone...',
-  coffee: '☕ Drinking coffee...',
+  coffee: '☕ Having coffee...',
   examining: '🔍 Examining...',
 };
+
+function CoffeeMug() {
+  return (
+    <group position={[0.42, 0.58, 0.12]} rotation={[0.15, 0, -0.08]}>
+      <mesh castShadow>
+        <cylinderGeometry args={[0.055, 0.045, 0.1, 12]} />
+        <meshStandardMaterial color="#ffffff" roughness={0.45} />
+      </mesh>
+      <mesh position={[0.065, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[0.028, 0.008, 8, 16]} />
+        <meshStandardMaterial color="#ffffff" roughness={0.45} />
+      </mesh>
+      {[0, 1, 2].map((i) => (
+        <mesh key={i} position={[(i - 1) * 0.025, 0.095 + i * 0.018, 0]}>
+          <sphereGeometry args={[0.012, 8, 8]} />
+          <meshStandardMaterial color="#d7f7ff" emissive="#8eeeff" emissiveIntensity={0.4} transparent opacity={0.55} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
 
 export function Character() {
   const meshRef = useRef<Group>(null);
@@ -54,6 +91,7 @@ export function Character() {
   const velocityRef = useRef(new Vector3());
   const targetRotation = useRef(0);
   const aiContext = useRef<AIContext>(createAIContext());
+  const activeInteraction = useRef<string | null>(null);
   const keys = useKeyboard();
   const [bobPhase, setBobPhase] = useState(0);
   const [pose, setPose] = useState<AIPose>('idle');
@@ -70,13 +108,13 @@ export function Character() {
   useFrame((_, delta) => {
     if (!meshRef.current || !bodyRef.current) return;
 
-    const { controlMode, lastInputTime, isInteracting } = useGameStore.getState();
+    const { controlMode, lastInputTime, isInteracting, currentZone } = useGameStore.getState();
 
     const { forward, backward, left, right, mobileX, mobileZ } = keys.current;
     const hasMobileInput = Math.abs(mobileX) > 0.1 || Math.abs(mobileZ) > 0.1;
     const isUserInput = forward || backward || left || right || hasMobileInput;
 
-    // Teleport: sync position from store if teleported
+    // Teleport: sync position from store if teleported.
     const storePos = useGameStore.getState().characterPosition;
     const meshPos = meshRef.current.position;
     const dx = Math.abs(storePos[0] - meshPos.x);
@@ -86,7 +124,25 @@ export function Character() {
       velocityRef.current.set(0, 0, 0);
     }
 
-    // User takes over from AI
+    // Furniture interaction: snap to the interaction point and commit to a
+    // dedicated pose while E/interaction mode is active.
+    if (isInteracting && currentZone && INTERACTION_POSES[currentZone] && activeInteraction.current !== currentZone) {
+      const targetZone = ZONES.find((zone) => zone.id === currentZone);
+      if (targetZone) {
+        meshRef.current.position.set(targetZone.interactionPoint[0], 0, targetZone.interactionPoint[2]);
+        velocityRef.current.set(0, 0, 0);
+        targetRotation.current = INTERACTION_ROTATIONS[currentZone] ?? 0;
+        meshRef.current.rotation.y = targetRotation.current;
+        setPose(INTERACTION_POSES[currentZone]);
+        activeInteraction.current = currentZone;
+      }
+    }
+
+    if (!isInteracting && activeInteraction.current) {
+      activeInteraction.current = null;
+    }
+
+    // User takes over from AI.
     if (isUserInput && controlMode === 'ai') {
       setControlMode('user');
       updateLastInputTime();
@@ -97,16 +153,21 @@ export function Character() {
       updateLastInputTime();
     }
 
-    // Return to AI after inactivity
-    if (controlMode === 'user' && !isUserInput && Date.now() - lastInputTime > AI_RETURN_DELAY) {
+    // Return to AI after inactivity.
+    if (controlMode === 'user' && !isUserInput && !isInteracting && Date.now() - lastInputTime > AI_RETURN_DELAY) {
       setControlMode('ai');
       aiContext.current = createAIContext();
     }
 
     let isMoving = false;
 
-    if (controlMode === 'user' && !isInteracting) {
-      // User control (keyboard + mobile joystick)
+    if (isInteracting && currentZone && INTERACTION_POSES[currentZone]) {
+      // Locked in the furniture activity until the user exits it.
+      velocityRef.current.lerp(new Vector3(), 0.35);
+      setPose(INTERACTION_POSES[currentZone]);
+      isMoving = false;
+    } else if (controlMode === 'user' && !isInteracting) {
+      // User control (keyboard + mobile joystick).
       const direction = new Vector3();
       if (forward) direction.z -= 1;
       if (backward) direction.z += 1;
@@ -129,7 +190,7 @@ export function Character() {
         setPose('idle');
       }
     } else if (controlMode === 'ai' && !isInteracting) {
-      // AI control
+      // AI control.
       const charPos: [number, number, number] = [
         meshRef.current.position.x,
         meshRef.current.position.y,
@@ -152,17 +213,21 @@ export function Character() {
       velocityRef.current.lerp(new Vector3(), 0.2);
     }
 
-    // Apply pose transforms to body
+    // Apply pose transforms to body.
     let targetRotX = 0;
     let targetRotZ = 0;
     let targetPosY = 0;
     if (pose === 'sleep') {
-      targetRotZ = Math.PI / 2;
-      targetPosY = 0.35;
-    } else if (pose === 'sit' || pose === 'typing') {
-      targetPosY = -0.15;
+      targetRotX = -Math.PI / 2;
+      targetPosY = -0.2;
+    } else if (pose === 'sit') {
+      targetRotX = -0.2;
+      targetPosY = -0.12;
+    } else if (pose === 'typing') {
+      targetPosY = -0.12;
     } else if (pose === 'coffee') {
-      targetRotX = 0.15;
+      targetRotX = 0.18;
+      targetPosY = -0.02;
     } else if (pose === 'phone') {
       targetRotX = 0.2;
     } else if (pose === 'examining') {
@@ -173,20 +238,20 @@ export function Character() {
     bodyRef.current.rotation.z += (targetRotZ - bodyRef.current.rotation.z) * 3 * delta;
     bodyRef.current.position.y += (targetPosY - bodyRef.current.position.y) * 3 * delta;
 
-    // Don't move during activities
+    // Don't move during activities.
     const isActivityPose = pose === 'sleep' || pose === 'sit' || pose === 'typing' || pose === 'phone' || pose === 'coffee' || pose === 'examining';
     if (isActivityPose) {
       velocityRef.current.set(0, 0, 0);
       isMoving = false;
     }
 
-    // Apply movement with bounds
+    // Apply movement with bounds.
     const newPos = meshRef.current.position.clone().add(velocityRef.current);
     newPos.x = Math.max(ROOM_BOUNDS.minX, Math.min(ROOM_BOUNDS.maxX, newPos.x));
     newPos.z = Math.max(ROOM_BOUNDS.minZ, Math.min(ROOM_BOUNDS.maxZ, newPos.z));
     meshRef.current.position.copy(newPos);
 
-    // Smooth rotation (don't rotate while sleeping or sitting)
+    // Smooth rotation outside locked furniture poses.
     if (pose !== 'sleep' && pose !== 'sit' && pose !== 'typing') {
       const currentRotY = meshRef.current.rotation.y;
       const diff = targetRotation.current - currentRotY;
@@ -194,7 +259,7 @@ export function Character() {
       meshRef.current.rotation.y += wrappedDiff * ROTATION_SPEED * delta;
     }
 
-    // Bob animation when walking
+    // Bob animation when walking.
     if (isMoving) {
       setBobPhase((prev) => prev + delta * 12);
       meshRef.current.position.y = Math.abs(Math.sin(bobPhase)) * 0.03;
@@ -218,6 +283,7 @@ export function Character() {
     <group ref={meshRef} position={[0, 0, 0]}>
       <group ref={bodyRef}>
         <RobotModel />
+        {pose === 'coffee' && <CoffeeMug />}
       </group>
 
       {/* Activity status bubble */}
