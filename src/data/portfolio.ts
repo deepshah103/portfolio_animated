@@ -200,35 +200,11 @@ export const PORTFOLIO: Record<string, PortfolioSection> = {
 
   'data-dashboard': {
     zoneId: 'data-dashboard',
-    title: 'Data Science & ML',
-    subtitle: 'Recommendation, forecasting, targeting & business analytics',
+    title: 'Data Science & Trading Systems',
+    subtitle: 'Trading research, market analytics & quantitative experiments',
     content:
-      'Applied data science projects where modeling is tied to measurable product or business outcomes.',
-    projects: [
-      {
-        title: 'Product Affinity',
-        context: 'Shaadi.com · Senior Data Scientist',
-        description:
-          'Purchase-intent modeling for personalized premium-plan recommendations and more effective targeting.',
-        techStack: ['Python', 'Machine Learning', 'Recommendation Systems', 'Predictive Modeling'],
-        impact: '13% increase in coverage and 4% increase in conversion.',
-      },
-      {
-        title: 'Category & Partner Retention',
-        context: 'Loylty Rewardz · Data Scientist I',
-        description:
-          'Modeling over transactional and profile data for retention, transaction forecasting and campaign optimization.',
-        techStack: ['Python', 'Machine Learning', 'Forecasting', 'Transaction Data', 'Campaign Analytics'],
-        impact: '65% campaign efficacy at 16% coverage — reported as a 2× improvement.',
-      },
-      {
-        title: 'Match Score',
-        context: 'Shaadi.com',
-        description:
-          'Compatibility and profile-ranking models combining demographic and behavioral signals.',
-        techStack: ['Python', 'Machine Learning', 'Ranking', 'Recommendation Systems'],
-      },
-    ],
+      'Trading and quantitative projects belong here. This section is intentionally left empty until a project can be verified from the original portfolio/history, rather than filling the Trading Terminal with unrelated professional ML projects.',
+    projects: [],
   },
 
   bookshelf: {
