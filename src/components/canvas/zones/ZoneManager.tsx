@@ -28,7 +28,13 @@ function ZoneMarker({ zone }: { zone: typeof ZONES[0] }) {
       </mesh>
 
       {!uiOverlayOpen && (
-        <Html position={[0, 2.5, 0]} center distanceFactor={8} style={{ pointerEvents: 'none' }}>
+        <Html
+          position={[0, 2.5, 0]}
+          center
+          distanceFactor={8}
+          zIndexRange={[20, 0]}
+          style={{ pointerEvents: 'none' }}
+        >
           <div className={`select-none rounded-full border px-3 py-1.5 text-xs font-bold whitespace-nowrap shadow-sm transition-all duration-300 ${isActive ? 'scale-110 border-cyan-400 bg-slate-950/90 text-cyan-200 shadow-[0_0_18px_rgba(34,211,238,.3)]' : 'border-white/60 bg-white/80 text-slate-600'}`}>
             <span className="mr-1">{zone.icon}</span>{zone.name}
           </div>
