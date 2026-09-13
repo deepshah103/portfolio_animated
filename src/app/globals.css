@@ -25,4 +25,3 @@ body:has(.flat-portfolio-page) {
   position: static;
   touch-action: pan-y;
 }
-}
