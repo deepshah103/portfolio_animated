@@ -8,6 +8,7 @@ import { createAIContext, updateAI, AIContext, AIPose } from '@/systems/characte
 import { ZONES } from '@/data/zones';
 import { Html, useGLTF } from '@react-three/drei';
 import { assetPath } from '@/utils/basePath';
+import { useGameStore } from '@/stores/gameStore';
 
 const MOVE_SPEED = 3;
 const AI_MOVE_SPEED = 2;
@@ -27,12 +28,6 @@ const INTERACTION_POSES: Record<string, AIPose> = {
   bed: 'sleep',
   couch: 'sit',
   lounge: 'coffee',
-};
-
-const INTERACTION_ROTATIONS: Record<string, number> = {
-  bed: 0,
-  couch: Math.PI,
-  lounge: -Math.PI / 2,
 };
 
 function RobotModel() {
@@ -70,9 +65,20 @@ const POSE_LABELS: Record<AIPose, string> = {
 function CoffeeMug() {
   return (
     <group position={[0.42, 0.58, 0.12]} rotation={[0.15, 0, -0.08]}>
-      <mesh castShadow><cylinderGeometry args={[0.055, 0.045, 0.1, 12]} /><meshStandardMaterial color="#ffffff" roughness={0.45} /></mesh>
-      <mesh position={[0.065, 0, 0]} rotation={[Math.PI / 2, 0, 0]}><torusGeometry args={[0.028, 0.008, 8, 16]} /><meshStandardMaterial color="#ffffff" roughness={0.45} /></mesh>
-      {[0, 1, 2].map((i) => <mesh key={i} position={[(i - 1) * 0.025, 0.095 + i * 0.018, 0]}><sphereGeometry args={[0.012, 8, 8]} /><meshStandardMaterial color="#d7f7ff" emissive="#8eeeff" emissiveIntensity={0.4} transparent opacity={0.55} /></mesh>)}
+      <mesh castShadow>
+        <cylinderGeometry args={[0.055, 0.045, 0.1, 12]} />
+        <meshStandardMaterial color="#ffffff" roughness={0.45} />
+      </mesh>
+      <mesh position={[0.065, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[0.028, 0.008, 8, 16]} />
+        <meshStandardMaterial color="#ffffff" roughness={0.45} />
+      </mesh>
+      {[0, 1, 2].map((i) => (
+        <mesh key={i} position={[(i - 1) * 0.025, 0.095 + i * 0.018, 0]}>
+          <sphereGeometry args={[0.012, 8, 8]} />
+          <meshStandardMaterial color="#d7f7ff" emissive="#8eeeff" emissiveIntensity={0.4} transparent opacity={0.55} />
+        </mesh>
+      ))}
     </group>
   );
 }
@@ -101,10 +107,14 @@ export function Character() {
     if (isInteracting && currentZone && INTERACTION_POSES[currentZone] && activeInteraction.current !== currentZone) {
       const targetZone = ZONES.find((zone) => zone.id === currentZone);
       if (targetZone) {
+        // Preserve the direction the robot was facing when it entered the interaction.
+        const approachRotation = meshRef.current.rotation.y;
         meshRef.current.position.set(targetZone.interactionPoint[0], 0, targetZone.interactionPoint[2]);
         velocityRef.current.set(0, 0, 0);
-        targetRotation.current = INTERACTION_ROTATIONS[currentZone] ?? 0;
-        meshRef.current.rotation.y = targetRotation.current;
+        targetRotation.current = approachRotation;
+        meshRef.current.rotation.y = approachRotation;
+        bodyRef.current.rotation.set(0, 0, 0);
+        bodyRef.current.position.set(0, 0.95, 0);
         setPose(INTERACTION_POSES[currentZone]);
         activeInteraction.current = currentZone;
       }
@@ -173,12 +183,19 @@ export function Character() {
     let targetRotX = 0;
     const targetRotZ = 0;
     let targetPosY = 0.95;
+    let targetBodyZ = 0;
+
     if (pose === 'sleep') {
+      // Lie on the mattress along its long axis. The higher center is intentional:
+      // after a 90° pitch, the robot's depth becomes its vertical extent.
       targetRotX = -Math.PI / 2;
-      targetPosY = 0.78;
+      targetPosY = 1.36;
+      targetBodyZ = -0.08;
     } else if (pose === 'sit') {
-      targetRotX = -0.55;
-      targetPosY = 0.9;
+      // Preserve the approach/current facing direction; only lean the body into the couch.
+      targetRotX = -0.42;
+      targetPosY = 0.88;
+      targetBodyZ = 0.08;
     } else if (pose === 'typing') {
       targetPosY = 0.87;
     } else if (pose === 'coffee') {
@@ -193,6 +210,7 @@ export function Character() {
     bodyRef.current.rotation.x += (targetRotX - bodyRef.current.rotation.x) * 4 * delta;
     bodyRef.current.rotation.z += (targetRotZ - bodyRef.current.rotation.z) * 4 * delta;
     bodyRef.current.position.y += (targetPosY - bodyRef.current.position.y) * 4 * delta;
+    bodyRef.current.position.z += (targetBodyZ - bodyRef.current.position.z) * 4 * delta;
 
     const isActivityPose = ['sleep', 'sit', 'typing', 'phone', 'coffee', 'examining'].includes(pose);
     if (isActivityPose) velocityRef.current.set(0, 0, 0);
