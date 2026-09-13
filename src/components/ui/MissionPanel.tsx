@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { useGameStore } from '@/stores/gameStore';
 
 const OBJECTIVES = [
@@ -11,14 +11,32 @@ const OBJECTIVES = [
   { id: 'lounge', icon: '✉️', title: 'Find contact', zone: 'lounge' },
 ];
 
+const STORAGE_KEY = 'deep-portfolio-mission';
+
 export function MissionPanel() {
   const currentZone = useGameStore((s) => s.currentZone);
-  const visited = useGameStore((s) => {
-    const active = s.currentZone;
-    return OBJECTIVES.map((item) => item.zone === active || false);
-  });
+  const [completed, setCompleted] = useState<string[]>([]);
 
-  const completedCount = useMemo(() => visited.filter(Boolean).length, [visited]);
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem(STORAGE_KEY);
+      if (saved) setCompleted(JSON.parse(saved));
+    } catch {
+      // Ignore malformed local mission state.
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!currentZone || !OBJECTIVES.some((item) => item.zone === currentZone)) return;
+    setCompleted((previous) => {
+      if (previous.includes(currentZone)) return previous;
+      const next = [...previous, currentZone];
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      return next;
+    });
+  }, [currentZone]);
+
+  const completedCount = OBJECTIVES.filter((item) => completed.includes(item.zone)).length;
 
   return (
     <div className="absolute bottom-5 left-5 hidden w-64 pointer-events-auto sm:block">
@@ -31,18 +49,19 @@ export function MissionPanel() {
           <div className="rounded-full bg-cyan-50 px-2 py-1 text-[10px] font-bold text-cyan-700">{completedCount}/5</div>
         </div>
         <div className="space-y-1.5">
-          {OBJECTIVES.map((item, index) => {
-            const complete = visited[index];
+          {OBJECTIVES.map((item) => {
+            const done = completed.includes(item.zone);
             const active = currentZone === item.zone;
             return (
               <div key={item.id} className={`flex items-center gap-2 rounded-xl px-2.5 py-2 transition ${active ? 'bg-cyan-50 ring-1 ring-cyan-200' : ''}`}>
-                <span className={`grid h-6 w-6 place-items-center rounded-lg text-xs ${complete ? 'bg-emerald-100' : 'bg-slate-100'}`}>{complete ? '✓' : item.icon}</span>
-                <span className={`flex-1 text-xs font-medium ${complete ? 'text-emerald-700 line-through decoration-emerald-300' : 'text-slate-600'}`}>{item.title}</span>
+                <span className={`grid h-6 w-6 place-items-center rounded-lg text-xs ${done ? 'bg-emerald-100' : 'bg-slate-100'}`}>{done ? '✓' : item.icon}</span>
+                <span className={`flex-1 text-xs font-medium ${done ? 'text-emerald-700 line-through decoration-emerald-300' : 'text-slate-600'}`}>{item.title}</span>
                 {active && <span className="h-1.5 w-1.5 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,.65)]" />}
               </div>
             );
           })}
         </div>
+        {completedCount === 5 && <div className="mt-2 rounded-xl bg-emerald-50 px-3 py-2 text-center text-[10px] font-bold text-emerald-700">Mission complete · Workspace explored</div>}
       </div>
     </div>
   );
