@@ -31,13 +31,8 @@ const INTERACTION_POSES: Record<string, AIPose> = {
 };
 
 const INTERACTION_ANCHORS: Record<string, { position: [number, number, number]; rotationY: number }> = {
-  // Bed runs along Z. Keep the robot centered on the mattress with its head
-  // toward the pillow/headboard and a fixed orientation independent of approach.
   bed: { position: [4.5, 0, 3.72], rotationY: 0 },
-  // Couch has one intended sitting direction. Do not inherit the user's
-  // approach angle when entering the interaction.
   couch: { position: [0, 0, 3], rotationY: 0 },
-  // Face the coffee station in the lounge.
   lounge: { position: [3.0, 0, 1.5], rotationY: 0 },
 };
 
@@ -96,7 +91,7 @@ export function Character() {
 
   const { setCharacterPosition, setCharacterRotation, setCurrentAnimation, controlMode, setControlMode, updateLastInputTime } = useGameStore();
 
-  useFrame((_, delta) => {
+  useFrame((state, delta) => {
     if (!meshRef.current || !bodyRef.current) return;
 
     const { controlMode, lastInputTime, isInteracting, currentZone } = useGameStore.getState();
@@ -180,18 +175,17 @@ export function Character() {
       velocityRef.current.lerp(new Vector3(), 0.2);
     }
 
+    const isIdle = pose === 'idle' && !isMoving;
     let targetRotX = 0;
-    const targetRotZ = 0;
+    const targetRotZ = isIdle ? Math.sin(state.clock.elapsedTime * 1.15) * 0.025 : 0;
     let targetPosY = 0.95;
     let targetBodyZ = 0;
 
     if (pose === 'sleep') {
-      // Sleep flat on the mattress, aligned with the bed's Z axis.
       targetRotX = -Math.PI / 2;
       targetPosY = 0.95;
       targetBodyZ = 0;
     } else if (pose === 'sit') {
-      // Sit into the couch without changing the fixed furniture-facing direction.
       targetRotX = -0.12;
       targetPosY = 0.68;
       targetBodyZ = 0.12;
@@ -205,6 +199,9 @@ export function Character() {
     } else if (pose === 'examining') {
       targetRotX = -0.1;
     }
+
+    const breathing = isIdle ? Math.sin(state.clock.elapsedTime * 1.7) * 0.008 : 0;
+    targetPosY += breathing;
 
     bodyRef.current.rotation.x += (targetRotX - bodyRef.current.rotation.x) * 4 * delta;
     bodyRef.current.rotation.z += (targetRotZ - bodyRef.current.rotation.z) * 4 * delta;
