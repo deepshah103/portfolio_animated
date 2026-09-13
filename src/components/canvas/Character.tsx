@@ -27,13 +27,13 @@ const MODEL_PATH = assetPath('/models/character/scene.gltf');
 const INTERACTION_POSES: Record<string, AIPose> = {
   bed: 'sleep',
   couch: 'sit',
-  lounge: 'coffee',
+  'coffee-terminal': 'coffee',
 };
 
 const INTERACTION_ANCHORS: Record<string, { position: [number, number, number]; rotationY: number }> = {
   bed: { position: [4.5, 0, 3.72], rotationY: 0 },
   couch: { position: [0, 0, 3], rotationY: 0 },
-  lounge: { position: [3.0, 0, 1.5], rotationY: 0 },
+  'coffee-terminal': { position: [-3.45, 0, 4.1], rotationY: Math.PI / 2 },
 };
 
 function RobotModel() {
