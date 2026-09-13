@@ -12,8 +12,14 @@ export default function FlatPortfolio() {
 
   return (
     <div className="min-h-screen bg-[#f5fbff] text-slate-900">
-      <header className="sticky top-0 z-20 border-b border-cyan-100 bg-white/90 backdrop-blur">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
+      <header className="sticky top-0 z-30 border-b border-cyan-100 bg-white/95 backdrop-blur">
+        <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between gap-4">
+          <nav className="hidden md:flex items-center gap-5 text-sm font-medium text-slate-600 order-2">
+            <a href="#featured" className="hover:text-cyan-700">Projects</a>
+            <a href="#skills" className="hover:text-cyan-700">Skills</a>
+            <a href="#about" className="hover:text-cyan-700">About</a>
+            <a href="#contact" className="hover:text-cyan-700">Contact</a>
+          </nav>
           <div>
             <div className="font-bold text-lg">Deep Shah</div>
             <div className="text-xs text-slate-500">Software Engineer · Data Scientist · AI Builder</div>
@@ -24,7 +30,7 @@ export default function FlatPortfolio() {
         </div>
       </header>
 
-      <section className="border-b border-cyan-100 bg-gradient-to-br from-cyan-50 via-white to-indigo-50">
+      <section id="top" className="border-b border-cyan-100 bg-gradient-to-br from-cyan-50 via-white to-indigo-50">
         <div className="max-w-6xl mx-auto px-6 py-16 md:py-20">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-600">Portfolio / Text View</p>
           <h1 className="mt-3 text-4xl md:text-6xl font-bold tracking-tight">I build software, ML systems & AI products.</h1>
@@ -100,12 +106,12 @@ export default function FlatPortfolio() {
           </div>
         </section>
 
-        <section className="mt-12 grid gap-6 md:grid-cols-2">
+        <section id="about" className="mt-12 grid gap-6 md:grid-cols-2">
           {['bookshelf', 'lounge'].map((id) => {
             const section = PORTFOLIO[id];
             if (!section) return null;
             return (
-              <div key={id} className="rounded-2xl border border-slate-200 bg-white p-6">
+              <div id={id === 'lounge' ? 'contact' : undefined} key={id} className="rounded-2xl border border-slate-200 bg-white p-6">
                 <h2 className="text-xl font-bold">{section.title}</h2>
                 <p className="mt-2 text-slate-600">{section.content}</p>
                 {section.links?.length ? (
@@ -121,6 +127,7 @@ export default function FlatPortfolio() {
 
       <footer className="border-t border-slate-200 bg-white">
         <div className="max-w-6xl mx-auto px-6 py-8 text-center text-sm text-slate-500">
+          <a href="#top" className="mb-4 inline-block rounded-lg border border-cyan-200 px-4 py-2 text-cyan-700 hover:bg-cyan-50">Back to top ↑</a>
           <p>© {new Date().getFullYear()} Deep Shah · Built with Next.js & React Three Fiber.</p>
           <Link href="/" className="mt-2 inline-block text-cyan-700 hover:underline">← Return to interactive portfolio</Link>
         </div>
