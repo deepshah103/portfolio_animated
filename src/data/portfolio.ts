@@ -190,10 +190,13 @@ export const PORTFOLIO: Record<string, PortfolioSection> = {
       },
       {
         title: 'Personal AI / WhatsApp Chatbot',
-        context: 'Independent experiment',
+        context: 'Independent GenAI project',
         description:
-          'Conversational assistant previously developed and discussed with a chat UI, /chat backend, conversation history, retrieval-grounded responses and Hindi/Devanagari handling.',
-        techStack: ['LLMs', 'RAG', 'NLP', 'Chat UI', 'Python', 'APIs'],
+          'A personal conversational AI system designed to answer in my style and stay grounded in my own information. The system combines a chat interface and /chat backend with conversation history, retrieval-augmented generation, embeddings with BM25-style reranking, prompt construction, style-aware responses and Hindi/Devanagari handling. Earlier experimentation also explored LoRA fine-tuning and evaluation.',
+        techStack: [
+          'Python', 'LLMs', 'RAG', 'Embeddings', 'BM25 Reranking',
+          'Prompt Engineering', 'NLP', 'LoRA', 'Chat UI', 'APIs',
+        ],
       },
     ],
   },
