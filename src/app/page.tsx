@@ -44,11 +44,7 @@ export default function Home() {
 
             <div className="mt-10 grid gap-5 md:grid-cols-2">
               <Link
-                href="/?experience=3d"
-                onClick={(e) => {
-                  e.preventDefault();
-                  window.location.href = '/?experience=3d&start=1';
-                }}
+                href="/explore"
                 className="group relative overflow-hidden rounded-3xl border border-cyan-300/20 bg-white/[0.06] p-7 text-left shadow-2xl backdrop-blur-xl transition hover:-translate-y-1 hover:border-cyan-300/50 hover:bg-cyan-300/[0.08]"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-cyan-300/10 via-transparent to-indigo-400/10 opacity-0 transition group-hover:opacity-100" />
