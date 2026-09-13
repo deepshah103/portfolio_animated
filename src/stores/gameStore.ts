@@ -19,6 +19,7 @@ interface GameState {
   leaveZone: () => void;
   startInteraction: () => void;
   endInteraction: () => void;
+  exitActivity: () => void;
   setLoaded: (loaded: boolean) => void;
 }
 
@@ -41,5 +42,6 @@ export const useGameStore = create<GameState>((set) => ({
   leaveZone: () => set({ currentZone: null }),
   startInteraction: () => set({ isInteracting: true }),
   endInteraction: () => set({ isInteracting: false }),
+  exitActivity: () => set({ isInteracting: false, controlMode: 'user', currentAnimation: 'idle', lastInputTime: Date.now() }),
   setLoaded: (loaded) => set({ isLoaded: loaded }),
 }));
