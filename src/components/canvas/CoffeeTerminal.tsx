@@ -4,7 +4,7 @@ import { Html } from '@react-three/drei';
 
 export function CoffeeTerminal() {
   return (
-    <group position={[2.65, 0, 1.5]}>
+    <group position={[-4.2, 0, 4.1]}>
       {/* Compact futuristic coffee station */}
       <mesh position={[0, 0.72, 0]} castShadow receiveShadow>
         <boxGeometry args={[0.65, 1.25, 0.5]} />
