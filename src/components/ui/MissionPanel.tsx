@@ -44,7 +44,7 @@ export function MissionPanel() {
         <div className="mb-2 flex items-center justify-between">
           <div>
             <div className="text-[9px] font-black uppercase tracking-[0.2em] text-cyan-600">Optional mission</div>
-            <div className="text-sm font-bold text-slate-800">Explore Deep's workspace</div>
+            <div className="text-sm font-bold text-slate-800">Explore Deep&apos;s workspace</div>
           </div>
           <div className="rounded-full bg-cyan-50 px-2 py-1 text-[10px] font-bold text-cyan-700">{completedCount}/5</div>
         </div>
