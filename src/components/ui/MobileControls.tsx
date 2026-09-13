@@ -59,23 +59,25 @@ export function MobileControls() {
     return () => clearInterval(interval);
   }, [isMobile]);
 
-  if (!isMobile || isInteracting) return null;
-  const leaveActivity = currentZone === 'bed' || currentZone === 'couch';
+  if (!isMobile) return null;
+  const canInteract = Boolean(currentZone);
 
   return (
     <div className="absolute inset-x-0 bottom-0 z-10 pointer-events-none pb-[max(12px,env(safe-area-inset-bottom))]">
       <div className="flex items-end justify-between px-5">
-        <div className="relative">
-          <div ref={joystickRef} className="grid h-32 w-32 touch-none place-items-center rounded-full border-2 border-cyan-300/80 bg-slate-950/40 shadow-[0_0_30px_rgba(6,182,212,.2)] backdrop-blur-xl pointer-events-auto" onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
-            <span className="absolute top-2 text-[10px] font-black text-cyan-200/70">▲</span><span className="absolute bottom-2 text-[10px] font-black text-cyan-200/70">▼</span><span className="absolute left-2 text-[10px] font-black text-cyan-200/70">◀</span><span className="absolute right-2 text-[10px] font-black text-cyan-200/70">▶</span>
-            <div ref={knobRef} className="h-14 w-14 rounded-full border-2 border-cyan-300 bg-cyan-400/80 shadow-[0_0_18px_rgba(34,211,238,.55)] transition-transform duration-75" />
+        {!isInteracting ? (
+          <div className="relative">
+            <div ref={joystickRef} className="grid h-32 w-32 touch-none place-items-center rounded-full border-2 border-cyan-300/80 bg-slate-950/40 shadow-[0_0_30px_rgba(6,182,212,.2)] backdrop-blur-xl pointer-events-auto" onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
+              <span className="absolute top-2 text-[10px] font-black text-cyan-200/70">▲</span><span className="absolute bottom-2 text-[10px] font-black text-cyan-200/70">▼</span><span className="absolute left-2 text-[10px] font-black text-cyan-200/70">◀</span><span className="absolute right-2 text-[10px] font-black text-cyan-200/70">▶</span>
+              <div ref={knobRef} className="h-14 w-14 rounded-full border-2 border-cyan-300 bg-cyan-400/80 shadow-[0_0_18px_rgba(34,211,238,.55)] transition-transform duration-75" />
+            </div>
+            <div className="mt-2 text-center text-[9px] font-semibold uppercase tracking-[0.16em] text-white/70">Drag to move</div>
           </div>
-          <div className="mt-2 text-center text-[9px] font-semibold uppercase tracking-[0.16em] text-white/70">Drag to move</div>
-        </div>
+        ) : <div />}
 
-        {currentZone && (
-          <button onClick={() => (leaveActivity ? exitActivity() : startInteraction())} className={`mb-5 grid h-20 w-20 place-items-center rounded-3xl border shadow-[0_0_24px_rgba(6,182,212,.25)] pointer-events-auto active:scale-95 ${leaveActivity ? 'border-amber-300 bg-amber-400 text-slate-950' : 'border-cyan-300 bg-cyan-500 text-white'}`}>
-            <span className="text-sm font-black">{leaveActivity ? 'LEAVE' : 'EXPLORE'}</span>
+        {canInteract && (
+          <button onClick={() => (isInteracting ? exitActivity() : startInteraction())} className={`mb-5 grid h-20 w-20 place-items-center rounded-3xl border shadow-[0_0_24px_rgba(6,182,212,.25)] pointer-events-auto active:scale-95 ${isInteracting ? 'border-amber-300 bg-amber-400 text-slate-950' : 'border-cyan-300 bg-cyan-500 text-white'}`}>
+            <span className="text-sm font-black">{isInteracting ? 'LEAVE' : 'EXPLORE'}</span>
           </button>
         )}
       </div>
