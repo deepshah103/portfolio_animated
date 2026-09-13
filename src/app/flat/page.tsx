@@ -11,7 +11,7 @@ export default function FlatPortfolio() {
   const contentZones = ZONES.filter((zone) => PORTFOLIO[zone.id]?.projects?.length || PORTFOLIO[zone.id]?.skills?.length || PORTFOLIO[zone.id]?.links?.length);
 
   return (
-    <div className="min-h-screen bg-[#f5fbff] text-slate-900">
+    <div className="flat-portfolio-page min-h-screen bg-[#f5fbff] text-slate-900">
       <header className="sticky top-0 z-30 border-b border-cyan-100 bg-white/95 backdrop-blur">
         <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between gap-4">
           <nav className="hidden md:flex items-center gap-5 text-sm font-medium text-slate-600 order-2">
