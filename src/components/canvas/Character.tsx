@@ -1,10 +1,9 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Vector3, Group } from 'three';
+import { Box3, Vector3, Group } from 'three';
 import { useKeyboard } from '@/hooks/useKeyboard';
-import { useGameStore } from '@/stores/gameStore';
 import { createAIContext, updateAI, AIContext, AIPose } from '@/systems/characterAI';
 import { ZONES } from '@/data/zones';
 import { Html, useGLTF } from '@react-three/drei';
@@ -31,18 +30,32 @@ const INTERACTION_POSES: Record<string, AIPose> = {
 };
 
 const INTERACTION_ROTATIONS: Record<string, number> = {
+  // Bed runs along Z; lie lengthwise on it.
   bed: 0,
+  // Couch back is toward -Z, so sit facing into the room (+Z).
   couch: Math.PI,
+  // Face the coffee table / terminal.
   lounge: -Math.PI / 2,
 };
 
 function RobotModel() {
   const { scene } = useGLTF(MODEL_PATH);
+  const modelMetrics = useMemo(() => {
+    const clone = scene.clone();
+    clone.updateWorldMatrix(true, true);
+    const box = new Box3().setFromObject(clone);
+    const centerY = (box.min.y + box.max.y) / 2;
+    const halfHeight = (box.max.y - box.min.y) / 2;
+    return { centerY, halfHeight };
+  }, [scene]);
+
+  // Center the imported model on its own origin and put its feet exactly on
+  // the floor. This avoids relying on a hard-coded asset offset.
   return (
     <primitive
       object={scene.clone()}
-      scale={[1.0, 1.0, 1.0]}
-      position={[0, 0.32, 0]}
+      scale={[1, 1, 1]}
+      position={[0, -modelMetrics.centerY, 0]}
       castShadow
     />
   );
@@ -110,8 +123,6 @@ export function Character() {
     const hasMobileInput = Math.abs(mobileX) > 0.1 || Math.abs(mobileZ) > 0.1;
     const isUserInput = forward || backward || left || right || hasMobileInput;
 
-    // Furniture interaction: snap to the interaction point and commit to a
-    // dedicated pose while E/interaction mode is active.
     if (isInteracting && currentZone && INTERACTION_POSES[currentZone] && activeInteraction.current !== currentZone) {
       const targetZone = ZONES.find((zone) => zone.id === currentZone);
       if (targetZone) {
@@ -198,25 +209,27 @@ export function Character() {
       velocityRef.current.lerp(new Vector3(), 0.2);
     }
 
-    // Furniture pose transforms.
+    // Pose is applied around the robot's actual model center. The center is
+    // kept above the floor, so rotations don't send feet through the ground.
     let targetRotX = 0;
-    const targetRotZ = pose === 'sleep' ? Math.PI / 2 : 0;
-    let targetPosY = 0;
+    let targetRotZ = 0;
+    let targetPosY = 0.95;
 
     if (pose === 'sleep') {
-      // Lay the robot along the bed, with the body center safely above the mattress.
-      targetPosY = 0.45;
+      // Lie flat across the mattress, with the center raised to mattress height.
+      targetRotX = -Math.PI / 2;
+      targetPosY = 0.78;
     } else if (pose === 'sit') {
-      // Lower and lean the robot back into the couch.
-      targetRotX = -0.35;
-      targetPosY = -0.05;
+      // Face the room, lower onto the seat, and lean back slightly.
+      targetRotX = -0.42;
+      targetPosY = 0.62;
     } else if (pose === 'typing') {
-      targetPosY = -0.08;
+      targetPosY = 0.87;
     } else if (pose === 'coffee') {
-      targetRotX = 0.18;
-      targetPosY = -0.02;
+      targetRotX = 0.16;
+      targetPosY = 0.9;
     } else if (pose === 'phone') {
-      targetRotX = 0.2;
+      targetRotX = 0.18;
     } else if (pose === 'examining') {
       targetRotX = -0.1;
     }
