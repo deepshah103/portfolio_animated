@@ -2,6 +2,7 @@
 
 import { useFrame } from '@react-three/fiber';
 import { useRef } from 'react';
+import { Mesh } from 'three';
 import { useGameStore } from '@/stores/gameStore';
 import { ZONES } from '@/data/zones';
 import { Html } from '@react-three/drei';
@@ -10,7 +11,7 @@ import { analytics } from '@/utils/analytics';
 function ZoneMarker({ zone }: { zone: typeof ZONES[0] }) {
   const currentZone = useGameStore((s) => s.currentZone);
   const isActive = currentZone === zone.id;
-  const pulseRef = useRef<THREE.Mesh>(null);
+  const pulseRef = useRef<Mesh>(null);
 
   useFrame(({ clock }) => {
     if (!pulseRef.current) return;
