@@ -17,3 +17,11 @@ body {
   position: fixed;
   touch-action: none;
 }
+
+/* The flat portfolio is a normal document and must scroll. */
+body:has(.flat-portfolio-page) {
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: static;
+  touch-action: pan-y;
+}

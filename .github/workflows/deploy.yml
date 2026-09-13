@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: [main, portfolio-redesign]
 
 permissions:
   contents: read
@@ -43,3 +43,5 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+# Deploy both stable and redesign branches through the Pages workflow.

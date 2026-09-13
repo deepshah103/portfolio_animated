@@ -1,64 +1,65 @@
 'use client';
 
 import { useGameStore } from '@/stores/gameStore';
-import { PORTFOLIO } from '@/data/portfolio';
+import { PORTFOLIO, Project } from '@/data/portfolio';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect } from 'react';
 
-function ProjectCard({ project }: { project: { title: string; description: string; techStack: string[]; github?: string; liveUrl?: string } }) {
+function ProjectCard({ project }: { project: Project }) {
   return (
-    <div className="bg-cyan-50/60 rounded-xl p-4 border border-cyan-200 hover:border-cyan-400 transition-colors">
-      <h4 className="font-semibold text-gray-800 mb-1">{project.title}</h4>
-      <p className="text-sm text-gray-600 mb-3">{project.description}</p>
-      <div className="flex flex-wrap gap-1.5 mb-3">
-        {project.techStack.map((tech) => (
-          <span key={tech} className="px-2 py-0.5 bg-cyan-100 text-cyan-700 text-xs rounded-full font-medium border border-cyan-200">
-            {tech}
-          </span>
-        ))}
+    <motion.article
+      initial={{ y: 8, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-cyan-300 hover:shadow-lg"
+    >
+      <div className="border-b border-slate-100 bg-gradient-to-r from-cyan-50 via-white to-indigo-50 px-4 py-3">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <div className="text-base font-bold text-slate-900">{project.title}</div>
+            {project.context && <div className="mt-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-cyan-700">{project.context}</div>}
+          </div>
+          <span className="rounded-full border border-cyan-200 bg-cyan-50 px-2 py-1 text-[9px] font-black uppercase tracking-wider text-cyan-700">Project</span>
+        </div>
       </div>
-      <div className="flex gap-2">
-        {project.github && (
-          <a href={project.github} target="_blank" rel="noopener noreferrer"
-            className="text-xs text-gray-500 hover:text-cyan-600 underline transition-colors">
-            GitHub
-          </a>
+
+      <div className="space-y-4 px-4 py-4">
+        <p className="text-sm leading-6 text-slate-600">{project.description}</p>
+
+        {project.impact && (
+          <div className="rounded-xl border border-emerald-100 bg-emerald-50/80 p-3">
+            <div className="text-[9px] font-black uppercase tracking-[0.14em] text-emerald-700">Impact</div>
+            <p className="mt-1 text-xs leading-5 text-emerald-900/80">{project.impact}</p>
+          </div>
         )}
-        {project.liveUrl && (
-          <a href={project.liveUrl} target="_blank" rel="noopener noreferrer"
-            className="text-xs text-cyan-600 hover:text-cyan-800 underline transition-colors">
-            Live Demo
-          </a>
+
+        <div>
+          <div className="mb-2 text-[9px] font-black uppercase tracking-[0.14em] text-slate-400">Tech stack</div>
+          <div className="flex flex-wrap gap-1.5">
+            {project.techStack.map((tech) => (
+              <span key={tech} className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-semibold text-slate-600 transition group-hover:border-cyan-100 group-hover:bg-cyan-50 group-hover:text-cyan-700">
+                {tech}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {(project.github || project.liveUrl) && (
+          <div className="flex flex-wrap gap-2 pt-1">
+            {project.github && <a href={project.github} target="_blank" rel="noopener noreferrer" className="rounded-xl bg-slate-900 px-3 py-2 text-[11px] font-bold text-white transition hover:bg-cyan-600">GitHub ↗</a>}
+            {project.liveUrl && <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="rounded-xl border border-cyan-200 bg-cyan-50 px-3 py-2 text-[11px] font-bold text-cyan-700 transition hover:bg-cyan-100">Live demo ↗</a>}
+          </div>
         )}
       </div>
-    </div>
+    </motion.article>
   );
 }
 
 function SkillBadges({ skills }: { skills: string[] }) {
-  return (
-    <div className="flex flex-wrap gap-2">
-      {skills.map((skill) => (
-        <span key={skill} className="px-3 py-1.5 bg-cyan-50 text-cyan-700 text-sm rounded-lg font-medium border border-cyan-200">
-          {skill}
-        </span>
-      ))}
-    </div>
-  );
+  return <div className="flex flex-wrap gap-2">{skills.map((skill) => <span key={skill} className="rounded-xl border border-cyan-100 bg-cyan-50 px-3 py-1.5 text-xs font-semibold text-cyan-700">{skill}</span>)}</div>;
 }
 
 function ContactLinks({ links }: { links: { label: string; url: string }[] }) {
-  return (
-    <div className="flex flex-col gap-3">
-      {links.map((link) => (
-        <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer"
-          className="flex items-center gap-3 px-4 py-3 bg-cyan-50/60 rounded-xl hover:bg-cyan-100 transition-colors border border-cyan-200 hover:border-cyan-400">
-          <span className="text-lg font-semibold text-gray-700">{link.label}</span>
-          <span className="text-cyan-500 ml-auto">→</span>
-        </a>
-      ))}
-    </div>
-  );
+  return <div className="flex flex-col gap-2">{links.map((link) => <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 transition hover:border-cyan-300 hover:bg-cyan-50"><span className="text-sm font-bold text-slate-700">{link.label}</span><span className="ml-auto text-cyan-500">↗</span></a>)}</div>;
 }
 
 export function InteractionPanel() {
@@ -66,9 +67,7 @@ export function InteractionPanel() {
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isInteracting) {
-        endInteraction();
-      }
+      if (e.key === 'Escape' && isInteracting) endInteraction();
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
@@ -80,65 +79,41 @@ export function InteractionPanel() {
     <AnimatePresence>
       {isInteracting && section && (
         <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/50 z-20"
-            onClick={endInteraction}
-          />
-
-          {/* Panel */}
-          <motion.div
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 z-20 bg-slate-950/45 backdrop-blur-[2px]" onClick={endInteraction} />
+          <motion.aside
             initial={{ x: '100%', opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: '100%', opacity: 0 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="absolute top-0 right-0 h-full w-full sm:w-[480px] bg-white/95 backdrop-blur-xl z-30 shadow-[0_0_40px_rgba(0,200,255,0.15)] border-l border-cyan-200 overflow-y-auto"
+            transition={{ type: 'spring', damping: 26, stiffness: 210, mass: 0.75 }}
+            className="absolute right-0 top-0 z-30 flex h-full w-full max-w-[560px] flex-col overflow-hidden border-l border-cyan-200/70 bg-slate-50/98 shadow-[-20px_0_60px_rgba(8,145,178,.12)] backdrop-blur-xl"
+            role="dialog"
+            aria-modal="true"
+            aria-label={section.title}
           >
-            {/* Header */}
-            <div className="sticky top-0 bg-white/90 backdrop-blur-sm border-b border-cyan-100 px-6 py-4 flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-bold text-gray-800">{section.title}</h2>
-                <p className="text-sm text-cyan-600">{section.subtitle}</p>
+            <header className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white/92 px-5 py-4 backdrop-blur-xl">
+              <div className="min-w-0 pr-3">
+                <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,.7)]" /><span className="text-[9px] font-black uppercase tracking-[0.22em] text-cyan-700">Workspace module</span></div>
+                <h2 className="mt-1 truncate text-xl font-bold tracking-tight text-slate-900">{section.title}</h2>
+                <p className="text-xs text-slate-500">{section.subtitle}</p>
               </div>
-              <button
-                onClick={endInteraction}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-50 border border-gray-200 hover:border-red-300 transition-colors text-gray-400 hover:text-red-500"
-              >
-                ✕
-              </button>
+              <button onClick={endInteraction} className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-slate-200 bg-slate-50 text-slate-400 transition hover:border-red-200 hover:bg-red-50 hover:text-red-500" aria-label="Close panel">✕</button>
+            </header>
+
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-5 touch-pan-y [scrollbar-gutter:stable]">
+              <div className="space-y-6 pb-8">
+                <div className="rounded-2xl border border-cyan-100 bg-gradient-to-br from-cyan-50 via-white to-indigo-50 p-4">
+                  <div className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-700">Overview</div>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">{section.content}</p>
+                </div>
+
+                {section.projects?.length ? <section className="space-y-3"><div className="flex items-end justify-between"><h3 className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Selected work</h3><span className="text-[10px] text-slate-400">{section.projects.length} item{section.projects.length === 1 ? '' : 's'}</span></div>{section.projects.map((project) => <ProjectCard key={project.title} project={project} />)}</section> : null}
+                {section.skills?.length ? <section className="space-y-3"><h3 className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Technical skills</h3><SkillBadges skills={section.skills} /></section> : null}
+                {section.links?.length ? <section className="space-y-3"><h3 className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Connect</h3><ContactLinks links={section.links} /></section> : null}
+              </div>
             </div>
 
-            {/* Content */}
-            <div className="px-6 py-6 space-y-6">
-              <p className="text-gray-600 leading-relaxed">{section.content}</p>
-
-              {section.projects && (
-                <div className="space-y-3">
-                  <h3 className="text-sm font-semibold text-cyan-600 uppercase tracking-wider">Projects</h3>
-                  {section.projects.map((project) => (
-                    <ProjectCard key={project.title} project={project} />
-                  ))}
-                </div>
-              )}
-
-              {section.skills && (
-                <div className="space-y-3">
-                  <h3 className="text-sm font-semibold text-cyan-600 uppercase tracking-wider">Technical Skills</h3>
-                  <SkillBadges skills={section.skills} />
-                </div>
-              )}
-
-              {section.links && (
-                <div className="space-y-3">
-                  <h3 className="text-sm font-semibold text-cyan-600 uppercase tracking-wider">Links</h3>
-                  <ContactLinks links={section.links} />
-                </div>
-              )}
-            </div>
-          </motion.div>
+            <footer className="border-t border-slate-200 bg-white/95 px-5 py-3 text-[10px] text-slate-400">Scroll for more · ESC closes · Click outside to return to the workspace</footer>
+          </motion.aside>
         </>
       )}
     </AnimatePresence>

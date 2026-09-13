@@ -29,7 +29,7 @@ function RobotModel() {
     <primitive
       object={scene.clone()}
       scale={[1.0, 1.0, 1.0]}
-      position={[0, 0.05, 0]}
+      position={[0, 0.95, 0]}
       castShadow
     />
   );
