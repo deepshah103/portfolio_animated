@@ -20,6 +20,7 @@ interface GameState {
   startInteraction: () => void;
   endInteraction: () => void;
   exitActivity: () => void;
+  jumpToZone: (zoneId: string) => void;
   setLoaded: (loaded: boolean) => void;
 }
 
@@ -43,5 +44,10 @@ export const useGameStore = create<GameState>((set) => ({
   startInteraction: () => set({ isInteracting: true }),
   endInteraction: () => set({ isInteracting: false }),
   exitActivity: () => set({ isInteracting: false, controlMode: 'user', currentAnimation: 'idle', lastInputTime: Date.now() }),
+  jumpToZone: (zoneId) => {
+    // Kept as a lightweight store action; the UI passes a valid zone id and the
+    // HUD resolves the actual interaction point before calling setCharacterPosition.
+    set({ currentZone: zoneId, controlMode: 'user', isInteracting: false, lastInputTime: Date.now() });
+  },
   setLoaded: (loaded) => set({ isLoaded: loaded }),
 }));
