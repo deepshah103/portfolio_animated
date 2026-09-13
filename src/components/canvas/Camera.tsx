@@ -32,14 +32,14 @@ export function FollowCamera() {
 
     const charPos = new Vector3(...characterPosition);
 
-    // Keep the robot comfortably inside the viewport instead of hugging the bottom edge.
-    const offset = new Vector3(0, 4.4, 5.6);
+    // Keep more space beneath the robot by aiming slightly below its feet.
+    const offset = new Vector3(0, 4.8, 5.8);
     const desiredPos = clampCamera(charPos.clone().add(offset));
 
     targetPosition.current.lerp(desiredPos, LERP_FACTOR);
     camera.position.copy(targetPosition.current);
 
-    const lookAt = charPos.clone().add(new Vector3(0, -0.05, -1));
+    const lookAt = charPos.clone().add(new Vector3(0, -0.8, -1));
     targetLookAt.current.lerp(lookAt, LERP_FACTOR);
     camera.lookAt(targetLookAt.current);
   });
