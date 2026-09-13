@@ -5,6 +5,7 @@ import { Suspense, useEffect } from 'react';
 import { Lighting } from './Lighting';
 import { World } from './World';
 import { Character } from './Character';
+import { CoffeeTerminal } from './CoffeeTerminal';
 import { FollowCamera } from './Camera';
 import { ZoneManager } from './zones/ZoneManager';
 import { PostProcessing } from './PostProcessing';
@@ -41,6 +42,7 @@ export function Scene() {
       <Suspense fallback={null}>
         <Lighting shadows={settings.shadows} />
         <World />
+        <CoffeeTerminal />
         <Character />
         <ZoneManager />
         {settings.particles && <DustParticles count={settings.particleCount} />}
