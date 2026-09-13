@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Deep Shah | Portfolio",
-  description: "Interactive 3D portfolio showcasing data science, AI, and software projects",
+  title: "Deep Shah | Software Engineer, Data Scientist & AI Builder",
+  description: "Interactive 3D portfolio of Deep Shah — software engineering, data science, computer vision, generative AI, agents, Android and full-stack products.",
 };
 
 export default function RootLayout({
