@@ -95,7 +95,7 @@ export function InteractionPanel() {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: '100%', opacity: 0 }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="absolute top-0 right-0 h-full w-full sm:w-[480px] bg-white/95 backdrop-blur-xl z-30 shadow-[0_0_40px_rgba(0,200,255,0.15)] border-l border-cyan-200 overflow-y-auto"
+            className="absolute top-0 right-0 h-full w-full sm:w-[480px] bg-white/95 backdrop-blur-xl z-30 shadow-[0_0_40px_rgba(0,200,255,0.15)] border-l border-cyan-200 overflow-y-auto overscroll-contain touch-pan-y [scrollbar-gutter:stable]"
           >
             {/* Header */}
             <div className="sticky top-0 bg-white/90 backdrop-blur-sm border-b border-cyan-100 px-6 py-4 flex items-center justify-between">
