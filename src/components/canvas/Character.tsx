@@ -30,6 +30,17 @@ const INTERACTION_POSES: Record<string, AIPose> = {
   lounge: 'coffee',
 };
 
+const INTERACTION_ANCHORS: Record<string, { position: [number, number, number]; rotationY: number }> = {
+  // Bed runs along Z. Keep the robot centered on the mattress with its head
+  // toward the pillow/headboard and a fixed orientation independent of approach.
+  bed: { position: [4.5, 0, 3.72], rotationY: 0 },
+  // Couch has one intended sitting direction. Do not inherit the user's
+  // approach angle when entering the interaction.
+  couch: { position: [0, 0, 3], rotationY: 0 },
+  // Face the coffee station in the lounge.
+  lounge: { position: [3.0, 0, 1.5], rotationY: 0 },
+};
+
 function RobotModel() {
   const { scene } = useGLTF(MODEL_PATH);
   const modelMetrics = useMemo(() => {
@@ -65,20 +76,9 @@ const POSE_LABELS: Record<AIPose, string> = {
 function CoffeeMug() {
   return (
     <group position={[0.42, 0.58, 0.12]} rotation={[0.15, 0, -0.08]}>
-      <mesh castShadow>
-        <cylinderGeometry args={[0.055, 0.045, 0.1, 12]} />
-        <meshStandardMaterial color="#ffffff" roughness={0.45} />
-      </mesh>
-      <mesh position={[0.065, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[0.028, 0.008, 8, 16]} />
-        <meshStandardMaterial color="#ffffff" roughness={0.45} />
-      </mesh>
-      {[0, 1, 2].map((i) => (
-        <mesh key={i} position={[(i - 1) * 0.025, 0.095 + i * 0.018, 0]}>
-          <sphereGeometry args={[0.012, 8, 8]} />
-          <meshStandardMaterial color="#d7f7ff" emissive="#8eeeff" emissiveIntensity={0.4} transparent opacity={0.55} />
-        </mesh>
-      ))}
+      <mesh castShadow><cylinderGeometry args={[0.055, 0.045, 0.1, 12]} /><meshStandardMaterial color="#ffffff" roughness={0.45} /></mesh>
+      <mesh position={[0.065, 0, 0]} rotation={[Math.PI / 2, 0, 0]}><torusGeometry args={[0.028, 0.008, 8, 16]} /><meshStandardMaterial color="#ffffff" roughness={0.45} /></mesh>
+      {[0, 1, 2].map((i) => <mesh key={i} position={[(i - 1) * 0.025, 0.095 + i * 0.018, 0]}><sphereGeometry args={[0.012, 8, 8]} /><meshStandardMaterial color="#d7f7ff" emissive="#8eeeff" emissiveIntensity={0.4} transparent opacity={0.55} /></mesh>)}
     </group>
   );
 }
@@ -105,19 +105,19 @@ export function Character() {
     const isUserInput = forward || backward || left || right || hasMobileInput;
 
     if (isInteracting && currentZone && INTERACTION_POSES[currentZone] && activeInteraction.current !== currentZone) {
-      const targetZone = ZONES.find((zone) => zone.id === currentZone);
-      if (targetZone) {
-        // Preserve the direction the robot was facing when it entered the interaction.
-        const approachRotation = meshRef.current.rotation.y;
-        meshRef.current.position.set(targetZone.interactionPoint[0], 0, targetZone.interactionPoint[2]);
-        velocityRef.current.set(0, 0, 0);
-        targetRotation.current = approachRotation;
-        meshRef.current.rotation.y = approachRotation;
-        bodyRef.current.rotation.set(0, 0, 0);
-        bodyRef.current.position.set(0, 0.95, 0);
-        setPose(INTERACTION_POSES[currentZone]);
-        activeInteraction.current = currentZone;
-      }
+      const anchor = INTERACTION_ANCHORS[currentZone] || {
+        position: ZONES.find((zone) => zone.id === currentZone)?.interactionPoint ?? [0, 0, 0],
+        rotationY: meshRef.current.rotation.y,
+      };
+
+      meshRef.current.position.set(anchor.position[0], anchor.position[1], anchor.position[2]);
+      velocityRef.current.set(0, 0, 0);
+      targetRotation.current = anchor.rotationY;
+      meshRef.current.rotation.y = anchor.rotationY;
+      bodyRef.current.rotation.set(0, 0, 0);
+      bodyRef.current.position.set(0, 0.95, 0);
+      setPose(INTERACTION_POSES[currentZone]);
+      activeInteraction.current = currentZone;
     }
 
     if (!isInteracting && activeInteraction.current) activeInteraction.current = null;
@@ -186,16 +186,15 @@ export function Character() {
     let targetBodyZ = 0;
 
     if (pose === 'sleep') {
-      // Lie on the mattress along its long axis. The higher center is intentional:
-      // after a 90° pitch, the robot's depth becomes its vertical extent.
+      // Sleep flat on the mattress, aligned with the bed's Z axis.
       targetRotX = -Math.PI / 2;
-      targetPosY = 1.36;
-      targetBodyZ = -0.08;
+      targetPosY = 0.95;
+      targetBodyZ = 0;
     } else if (pose === 'sit') {
-      // Preserve the approach/current facing direction; only lean the body into the couch.
-      targetRotX = -0.42;
-      targetPosY = 0.88;
-      targetBodyZ = 0.08;
+      // Sit into the couch without changing the fixed furniture-facing direction.
+      targetRotX = -0.12;
+      targetPosY = 0.68;
+      targetBodyZ = 0.12;
     } else if (pose === 'typing') {
       targetPosY = 0.87;
     } else if (pose === 'coffee') {
