@@ -9,6 +9,7 @@ interface GameState {
   currentZone: string | null;
   isInteracting: boolean;
   isLoaded: boolean;
+  uiOverlayOpen: boolean;
 
   setCharacterPosition: (pos: [number, number, number]) => void;
   setCharacterRotation: (rot: number) => void;
@@ -22,6 +23,7 @@ interface GameState {
   exitActivity: () => void;
   jumpToZone: (zoneId: string) => void;
   setLoaded: (loaded: boolean) => void;
+  setUiOverlayOpen: (open: boolean) => void;
 }
 
 export const useGameStore = create<GameState>((set) => ({
@@ -33,6 +35,7 @@ export const useGameStore = create<GameState>((set) => ({
   currentZone: null,
   isInteracting: false,
   isLoaded: false,
+  uiOverlayOpen: false,
 
   setCharacterPosition: (pos) => set({ characterPosition: pos }),
   setCharacterRotation: (rot) => set({ characterRotation: rot }),
@@ -45,9 +48,8 @@ export const useGameStore = create<GameState>((set) => ({
   endInteraction: () => set({ isInteracting: false }),
   exitActivity: () => set({ isInteracting: false, controlMode: 'user', currentAnimation: 'idle', lastInputTime: Date.now() }),
   jumpToZone: (zoneId) => {
-    // Kept as a lightweight store action; the UI passes a valid zone id and the
-    // HUD resolves the actual interaction point before calling setCharacterPosition.
     set({ currentZone: zoneId, controlMode: 'user', isInteracting: false, lastInputTime: Date.now() });
   },
   setLoaded: (loaded) => set({ isLoaded: loaded }),
+  setUiOverlayOpen: (open) => set({ uiOverlayOpen: open }),
 }));
