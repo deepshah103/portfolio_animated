@@ -14,6 +14,8 @@ import { EasterEggs } from './EasterEggs';
 import { useGameStore } from '@/stores/gameStore';
 import { useSettingsStore } from '@/stores/settingsStore';
 
+export const WORLD_SCALE = 1.45;
+
 function SceneReady() {
   const setLoaded = useGameStore((s) => s.setLoaded);
   useEffect(() => {
@@ -32,22 +34,24 @@ export function Scene() {
   return (
     <Canvas
       shadows={settings.shadows}
-      camera={{ position: [0, 3, 5], fov: 55 }}
+      camera={{ position: [0, 3.5, 6], fov: 55 }}
       style={{ width: '100%', height: '100%' }}
       dpr={settings.pixelRatio}
     >
       <color attach="background" args={['#e8f4fa']} />
-      <fog attach="fog" args={['#e8f4fa', 12, 22]} />
+      <fog attach="fog" args={['#e8f4fa', 18, 32]} />
 
       <Suspense fallback={null}>
         <Lighting shadows={settings.shadows} />
-        <World />
-        <CoffeeTerminal />
-        <Character />
-        <ZoneManager />
+        <group scale={WORLD_SCALE}>
+          <World />
+          <CoffeeTerminal />
+          <Character />
+          <ZoneManager />
+          <EasterEggs />
+        </group>
         {settings.particles && <DustParticles count={settings.particleCount} />}
         <FollowCamera />
-        <EasterEggs />
         {settings.postProcessing && <PostProcessing />}
         <SceneReady />
       </Suspense>
