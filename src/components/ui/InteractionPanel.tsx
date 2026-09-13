@@ -63,15 +63,18 @@ function ContactLinks({ links }: { links: { label: string; url: string }[] }) {
 }
 
 export function InteractionPanel() {
-  const { isInteracting, currentZone, endInteraction } = useGameStore();
+  const { isInteracting, currentZone, exitActivity } = useGameStore();
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isInteracting) endInteraction();
+      if ((e.code === 'Escape' || e.code === 'KeyE') && isInteracting) {
+        e.preventDefault();
+        exitActivity();
+      }
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
-  }, [isInteracting, endInteraction]);
+  }, [isInteracting, exitActivity]);
 
   const section = currentZone ? PORTFOLIO[currentZone] : null;
 
@@ -79,7 +82,7 @@ export function InteractionPanel() {
     <AnimatePresence>
       {isInteracting && section && (
         <>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 z-20 bg-slate-950/45 backdrop-blur-[2px]" onClick={endInteraction} />
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 z-20 bg-slate-950/45 backdrop-blur-[2px]" onClick={exitActivity} />
           <motion.aside
             initial={{ x: '100%', opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
@@ -96,7 +99,7 @@ export function InteractionPanel() {
                 <h2 className="mt-1 truncate text-xl font-bold tracking-tight text-slate-900">{section.title}</h2>
                 <p className="text-xs text-slate-500">{section.subtitle}</p>
               </div>
-              <button onClick={endInteraction} className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-slate-200 bg-slate-50 text-slate-400 transition hover:border-red-200 hover:bg-red-50 hover:text-red-500" aria-label="Close panel">✕</button>
+              <button onClick={exitActivity} className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-slate-200 bg-slate-50 text-slate-400 transition hover:border-red-200 hover:bg-red-50 hover:text-red-500" aria-label="Close panel">✕</button>
             </header>
 
             <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-5 touch-pan-y [scrollbar-gutter:stable]">
@@ -112,7 +115,7 @@ export function InteractionPanel() {
               </div>
             </div>
 
-            <footer className="border-t border-slate-200 bg-white/95 px-5 py-3 text-[10px] text-slate-400">Scroll for more · ESC closes · Click outside to return to the workspace</footer>
+            <footer className="border-t border-slate-200 bg-white/95 px-5 py-3 text-[10px] text-slate-400">Scroll for more · E / ESC closes · Click outside to return to the workspace</footer>
           </motion.aside>
         </>
       )}
