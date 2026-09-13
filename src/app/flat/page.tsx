@@ -14,7 +14,7 @@ export default function FlatPortfolio() {
       <header className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
         <div className="max-w-4xl mx-auto px-6 py-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Deep Shah</h1>
-          <p className="text-xl text-gray-600">Data Scientist & Software Engineer</p>
+          <p className="text-xl text-gray-600">Software Engineer · Data Scientist · AI Builder</p>
           <p className="mt-4 text-gray-500 text-sm">
             <Link href="/" className="text-blue-600 hover:underline">← Back to 3D Portfolio</Link>
           </p>
