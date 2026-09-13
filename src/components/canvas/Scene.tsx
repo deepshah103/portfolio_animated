@@ -6,6 +6,7 @@ import { Lighting } from './Lighting';
 import { World } from './World';
 import { Character } from './Character';
 import { CoffeeTerminal } from './CoffeeTerminal';
+import { InteractiveDisplays } from './InteractiveDisplays';
 import { FollowCamera } from './Camera';
 import { ZoneManager } from './zones/ZoneManager';
 import { PostProcessing } from './PostProcessing';
@@ -43,6 +44,7 @@ export function Scene() {
         <Lighting shadows={settings.shadows} />
         <World />
         <CoffeeTerminal />
+        <InteractiveDisplays />
         <Character />
         <ZoneManager />
         {settings.particles && <DustParticles count={settings.particleCount} />}
