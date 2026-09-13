@@ -15,6 +15,7 @@ const STORAGE_KEY = 'deep-portfolio-mission';
 
 export function MissionPanel() {
   const currentZone = useGameStore((s) => s.currentZone);
+  const isInteracting = useGameStore((s) => s.isInteracting);
   const [completed, setCompleted] = useState<string[]>([]);
 
   useEffect(() => {
@@ -27,14 +28,14 @@ export function MissionPanel() {
   }, []);
 
   useEffect(() => {
-    if (!currentZone || !OBJECTIVES.some((item) => item.zone === currentZone)) return;
+    if (!isInteracting || !currentZone || !OBJECTIVES.some((item) => item.zone === currentZone)) return;
     setCompleted((previous) => {
       if (previous.includes(currentZone)) return previous;
       const next = [...previous, currentZone];
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
       return next;
     });
-  }, [currentZone]);
+  }, [currentZone, isInteracting]);
 
   const completedCount = OBJECTIVES.filter((item) => completed.includes(item.zone)).length;
 
