@@ -69,10 +69,14 @@ export function HUD() {
     if (!seen) setShowWelcome(true);
 
     const handleKey = (e: KeyboardEvent) => {
-      if ((e.code === 'KeyE' || e.code === 'Space') && currentZone && !isInteracting) {
-        e.preventDefault();
-        if (currentZone === 'bed' || currentZone === 'couch') exitActivity();
-        else startInteraction();
+      if (e.code === 'KeyE' || e.code === 'Space') {
+        if (isInteracting) {
+          e.preventDefault();
+          exitActivity();
+        } else if (currentZone) {
+          e.preventDefault();
+          startInteraction();
+        }
       }
       if (e.code === 'KeyM') setMenuOpen((open) => !open);
       if (e.code === 'KeyK' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); setQuery(''); setCommandOpen(true); }
@@ -114,7 +118,7 @@ export function HUD() {
         </div>}
       </div>
 
-      {zone && <div className="absolute top-5 left-1/2 -translate-x-1/2 pointer-events-none animate-[pulse_2.5s_ease-in-out_infinite]"><div className="rounded-2xl border border-cyan-300/70 bg-slate-950/85 px-4 py-2.5 text-white shadow-[0_0_28px_rgba(34,211,238,.22)] backdrop-blur-xl"><div className="flex items-center gap-3 text-sm"><span className="text-lg">{zone.icon}</span><div><div className="font-semibold">{zone.name}</div><div className="text-[10px] text-slate-300">{zone.description}</div></div><span className="rounded-lg bg-cyan-400 px-2.5 py-1 text-[10px] font-black text-slate-950">{zone.id === 'bed' || zone.id === 'couch' ? 'E · LEAVE' : 'E · EXPLORE'}</span></div></div></div>}
+      {zone && <div className="absolute top-5 left-1/2 -translate-x-1/2 pointer-events-none animate-[pulse_2.5s_ease-in-out_infinite]"><div className="rounded-2xl border border-cyan-300/70 bg-slate-950/85 px-4 py-2.5 text-white shadow-[0_0_28px_rgba(34,211,238,.22)] backdrop-blur-xl"><div className="flex items-center gap-3 text-sm"><span className="text-lg">{zone.icon}</span><div><div className="font-semibold">{zone.name}</div><div className="text-[10px] text-slate-300">{zone.description}</div></div><span className="rounded-lg bg-cyan-400 px-2.5 py-1 text-[10px] font-black text-slate-950">{zone.id === 'bed' || zone.id === 'couch' || isInteracting ? 'E · LEAVE' : 'E · EXPLORE'}</span></div></div></div>}
 
       <div className="absolute top-4 right-4 pointer-events-auto flex items-center gap-2"><button onClick={() => { setQuery(''); setCommandOpen(true); }} className="hidden sm:inline-flex items-center gap-2 rounded-xl border border-cyan-200/80 bg-white/80 px-3 py-2 text-[10px] font-semibold text-slate-500 shadow-lg backdrop-blur-xl hover:text-cyan-700"><span>⌘K</span><span>Search</span></button><a href={assetPath('/flat')} className="rounded-xl border border-cyan-200/80 bg-white/80 px-3 py-2 text-[10px] font-semibold text-slate-500 shadow-lg backdrop-blur-xl hover:text-cyan-700">Text View</a><div className="flex items-center gap-2 rounded-xl border border-cyan-200/80 bg-white/80 px-3 py-2 shadow-lg backdrop-blur-xl"><div className={`h-2 w-2 rounded-full ${controlMode === 'ai' ? 'bg-emerald-400 shadow-[0_0_9px_rgba(52,211,153,.7)]' : 'bg-cyan-500 shadow-[0_0_9px_rgba(6,182,212,.7)]'}`} /><span className="text-[10px] font-semibold text-slate-600">{controlMode === 'ai' ? 'AUTO' : 'YOU'}</span></div></div>
 
@@ -124,8 +128,6 @@ export function HUD() {
       {(helpOpen || showWelcome) && <div className="absolute inset-0 z-[100] flex items-center justify-center bg-slate-950/55 p-6 pointer-events-auto backdrop-blur-md"><div className="relative z-[101] w-full max-w-lg rounded-3xl border border-cyan-200/40 bg-white/95 p-6 shadow-2xl"><div className="flex items-start justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-600">{showWelcome ? 'Welcome' : 'Controls'}</p><h2 className="mt-1 text-2xl font-bold text-slate-900">Explore the workspace</h2></div><button onClick={() => { setHelpOpen(false); finishWelcome(); }} className="rounded-full bg-slate-100 px-3 py-1 text-sm">✕</button></div><div className="mt-5 grid gap-3 sm:grid-cols-2">{[['W A S D','Move around'],['E','Explore / interact'],['M','Open navigation'],['Ctrl/⌘ + K','Command palette'],['?','Open this help'],['ESC','Close overlays']].map(([key,label]) => <div key={key} className="rounded-2xl border border-slate-200 bg-slate-50 p-3"><kbd className="rounded-lg bg-slate-900 px-2 py-1 text-xs font-bold text-white">{key}</kbd><p className="mt-2 text-sm font-medium text-slate-700">{label}</p></div>)}</div><div className="mt-5 rounded-2xl border border-cyan-100 bg-cyan-50 p-4"><p className="text-xs font-semibold text-cyan-800">Tip</p><p className="mt-1 text-sm text-cyan-900/80">Use the mini-map or Explore menu to jump directly to any room. Start a guided tour for a hands-off walkthrough.</p></div><button onClick={() => { setHelpOpen(false); finishWelcome(); }} className="mt-5 w-full rounded-xl bg-cyan-500 px-4 py-3 text-sm font-bold text-white hover:bg-cyan-600">Start exploring →</button></div></div>}
 
       {commandOpen && <div className="absolute inset-0 z-50 flex items-start justify-center bg-slate-950/35 p-6 pt-24 pointer-events-auto backdrop-blur-sm" onClick={() => setCommandOpen(false)}><div className="w-full max-w-xl overflow-hidden rounded-3xl border border-cyan-200/50 bg-white/95 shadow-2xl" onClick={(e) => e.stopPropagation()}><div className="border-b border-slate-200 p-4"><input autoFocus value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search rooms..." className="w-full bg-transparent text-base outline-none placeholder:text-slate-400" /></div><div className="max-h-80 overflow-y-auto p-2">{filteredZones.map((item) => <button key={item.id} onClick={() => jumpToZone(item.id)} className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left hover:bg-cyan-50"><span className="text-xl">{item.icon}</span><span className="flex-1"><span className="block text-sm font-semibold text-slate-800">{item.name}</span><span className="block text-xs text-slate-400">{item.description}</span></span><span className="text-cyan-500">↵</span></button>)}{filteredZones.length === 0 && <div className="p-6 text-center text-sm text-slate-500">No room matches that search.</div>}</div><div className="flex items-center justify-between border-t border-slate-200 px-4 py-3 text-[10px] text-slate-400"><span>Jump instantly</span><button onClick={() => { setTourIndex(0); setTourRunning(true); setCommandOpen(false); }} className="font-bold text-cyan-600 hover:text-cyan-700">Start guided tour</button></div></div></div>}
-
-      {tourRunning && <div className="absolute bottom-20 left-1/2 -translate-x-1/2 rounded-2xl border border-cyan-300/40 bg-slate-950/85 px-4 py-3 text-xs text-white shadow-xl backdrop-blur-xl"><span className="font-semibold text-cyan-300">Guided tour</span><span className="mx-2 text-slate-500">•</span>Stop {Math.min(tourIndex + 1, TOUR_ZONES.length)} / {TOUR_ZONES.length}</div>}
     </div>
   );
 }
