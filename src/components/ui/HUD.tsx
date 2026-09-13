@@ -6,14 +6,18 @@ import { ZONES } from '@/data/zones';
 import { assetPath } from '@/utils/basePath';
 
 export function HUD() {
-  const { controlMode, currentZone, isInteracting, startInteraction } = useGameStore();
+  const { controlMode, currentZone, isInteracting, startInteraction, exitActivity } = useGameStore();
 
   const zone = currentZone ? ZONES.find((z) => z.id === currentZone) : null;
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if ((e.code === 'KeyE' || e.code === 'Space') && currentZone && !isInteracting) {
-        startInteraction();
+        if (currentZone === 'bed' || currentZone === 'couch') {
+          exitActivity();
+        } else {
+          startInteraction();
+        }
       }
     };
     window.addEventListener('keydown', handleKey);
@@ -30,7 +34,7 @@ export function HUD() {
           <p className="text-sm font-medium text-gray-700">
             <span className="mr-2">{zone.icon}</span>
             {zone.description}
-            <span className="ml-3 px-2 py-0.5 bg-cyan-500 text-white rounded text-xs font-bold">E</span>
+            <span className="ml-3 px-2 py-0.5 bg-cyan-500 text-white rounded text-xs font-bold">{zone.id === 'bed' || zone.id === 'couch' ? 'E · Leave' : 'E'}</span>
           </p>
         </div>
       )}
