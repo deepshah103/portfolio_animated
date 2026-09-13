@@ -234,14 +234,6 @@ export const PORTFOLIO: Record<string, PortfolioSection> = {
     ],
   },
 
-  'coffee-terminal': {
-    zoneId: 'coffee-terminal',
-    title: 'Coffee Break',
-    subtitle: 'Recharge before the next build',
-    content:
-      'A small break station in the workspace. Press E to make coffee and let the robot relax for a moment.',
-  },
-
   'skill-shelf': {
     zoneId: 'skill-shelf',
     title: 'Skills & Education',
