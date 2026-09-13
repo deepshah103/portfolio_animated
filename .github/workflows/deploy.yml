@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [portfolio-redesign]
+    branches: [main, portfolio-redesign]
 
 permissions:
   contents: read
