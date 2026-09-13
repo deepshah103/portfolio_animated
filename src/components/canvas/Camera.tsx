@@ -5,7 +5,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { Vector3 } from 'three';
 import { useGameStore } from '@/stores/gameStore';
 
-const WORLD_SCALE = 1.45;
+const WORLD_SCALE = 1.22;
 const LERP_FACTOR = 0.05;
 const INTRO_DURATION = 2200;
 const CAMERA_BOUNDS = {
