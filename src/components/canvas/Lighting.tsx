@@ -59,7 +59,7 @@ export function Lighting({ shadows = true }: { shadows?: boolean }) {
       {/* Hemisphere — bright sky/ground */}
       <hemisphereLight args={["#ccedff", "#e0f0ff", 0.6]} />
 
-      {/* Cyan accent strips — simulating LED panels */}
+      {/* Perimeter cyan strips */}
       <pointLight position={[0, 2.5, -5]} intensity={1.5} color="#00ddff" distance={6} />
       <pointLight position={[-5.5, 2.5, 0]} intensity={1.2} color="#00ccee" distance={5} />
       <pointLight position={[5.5, 2.5, 0]} intensity={1.2} color="#00ccee" distance={5} />
@@ -68,10 +68,17 @@ export function Lighting({ shadows = true }: { shadows?: boolean }) {
       {/* Central overhead panel glow */}
       <pointLight position={[0, 3.2, 0]} intensity={1.0} color="#ffffff" distance={8} />
 
-      {/* Subtle teal accents at zones */}
-      <pointLight position={[-3, 0.5, -4.5]} intensity={0.6} color="#00ffcc" distance={3} />
-      <pointLight position={[4, 0.5, -4.5]} intensity={0.6} color="#00eeff" distance={3} />
-      <pointLight position={[4.5, 0.5, 3.5]} intensity={0.4} color="#66ddff" distance={3} />
+      {/* Zone accents aligned with the restructured workspace */}
+      <pointLight position={[-2.8, 1.8, -4.2]} intensity={0.7} color="#9b72ff" distance={3.5} />
+      <pointLight position={[0, 1.8, -4.8]} intensity={0.7} color="#00d9ff" distance={3.5} />
+      <pointLight position={[3.2, 1.8, -3.8]} intensity={0.55} color="#66dfff" distance={3} />
+      <pointLight position={[4.6, 1.8, -2.9]} intensity={0.65} color="#4fdcff" distance={3.5} />
+      <pointLight position={[-5.4, 1.6, 1.1]} intensity={0.55} color="#70ffcf" distance={3} />
+      <pointLight position={[5.4, 1.8, 0]} intensity={0.6} color="#00eeff" distance={3} />
+      <pointLight position={[3.8, 1.6, 1.8]} intensity={0.45} color="#8be7ff" distance={2.8} />
+      <pointLight position={[0, 1.4, 3.5]} intensity={0.45} color="#b8efff" distance={3.2} />
+      <pointLight position={[4.8, 1.6, 4.0]} intensity={0.4} color="#66ddff" distance={3} />
+      <pointLight position={[-3.45, 1.3, 4.1]} intensity={0.5} color="#ffd37a" distance={2.6} />
     </>
   );
 }
