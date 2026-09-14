@@ -31,9 +31,9 @@ const INTERACTION_POSES: Record<string, AIPose> = {
 };
 
 const INTERACTION_ANCHORS: Record<string, { position: [number, number, number]; rotationY: number }> = {
-  bed: { position: [4.8, 0, 4.0], rotationY: 0 },
-  couch: { position: [0, 0, 3.5], rotationY: 0 },
-  'coffee-terminal': { position: [-3.45, 0, 4.1], rotationY: Math.PI / 2 },
+  bed: { position: [4.8, 0, 4.22], rotationY: 0 },
+  couch: { position: [0, 0, 3.6], rotationY: 0 },
+  'coffee-terminal': { position: [-3.45, 0, 4.1], rotationY: -Math.PI / 2 },
 };
 
 function RobotModel() {
@@ -69,8 +69,26 @@ const POSE_LABELS: Record<AIPose, string> = {
 };
 
 function CoffeeMug() {
+  const mugRef = useRef<Group>(null);
+
+  useFrame((state) => {
+    if (!mugRef.current) return;
+    const cycle = state.clock.elapsedTime % 4.8;
+    const isLifting = cycle > 1.4 && cycle < 2.8;
+    const liftProgress = isLifting ? (cycle - 1.4) / 1.4 : cycle >= 2.8 ? 1 : 0;
+    const eased = liftProgress < 0.5
+      ? 2 * liftProgress * liftProgress
+      : 1 - Math.pow(-2 * liftProgress + 2, 2) / 2;
+
+    const terminalPos = new Vector3(0.42, 0.58, 0.2);
+    const sipPos = new Vector3(0.30, 0.90, -0.12);
+    mugRef.current.position.lerpVectors(terminalPos, sipPos, eased);
+    mugRef.current.rotation.z = -0.08 - eased * 0.2;
+    mugRef.current.rotation.x = 0.15 + eased * 0.14;
+  });
+
   return (
-    <group position={[0.42, 0.58, 0.12]} rotation={[0.15, 0, -0.08]}>
+    <group ref={mugRef}>
       <mesh castShadow><cylinderGeometry args={[0.055, 0.045, 0.1, 12]} /><meshStandardMaterial color="#ffffff" roughness={0.45} /></mesh>
       <mesh position={[0.065, 0, 0]} rotation={[Math.PI / 2, 0, 0]}><torusGeometry args={[0.028, 0.008, 8, 16]} /><meshStandardMaterial color="#ffffff" roughness={0.45} /></mesh>
       {[0, 1, 2].map((i) => <mesh key={i} position={[(i - 1) * 0.025, 0.095 + i * 0.018, 0]}><sphereGeometry args={[0.012, 8, 8]} /><meshStandardMaterial color="#d7f7ff" emissive="#8eeeff" emissiveIntensity={0.4} transparent opacity={0.55} /></mesh>)}
@@ -192,7 +210,7 @@ export function Character() {
     } else if (pose === 'typing') {
       targetPosY = 0.87;
     } else if (pose === 'coffee') {
-      targetRotX = 0.16;
+      targetRotX = 0.08;
       targetPosY = 0.9;
     } else if (pose === 'phone') {
       targetRotX = 0.18;
