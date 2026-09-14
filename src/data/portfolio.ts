@@ -215,7 +215,12 @@ export const PORTFOLIO: Record<string, PortfolioSection> = {
     title: 'About Me',
     subtitle: 'Software Engineer · Data Scientist · AI Builder',
     content:
-      'I build intelligent products at the intersection of software engineering, machine learning and generative AI. My work ranges from production enterprise AI systems and computer-vision platforms to Android apps and independent full-stack products.',
+      'I build intelligent products at the intersection of software engineering, machine learning and generative AI. My work spans production enterprise AI, computer vision, full-stack applications and practical Android products. I enjoy turning ambiguous ideas into reliable systems — from retrieval and agent workflows to APIs, data pipelines, cloud deployment and polished user experiences. Outside a single technology, I care most about solving useful problems end to end and making the final product genuinely usable.',
+    skills: [
+      'Software Engineering', 'Generative AI', 'RAG', 'AI Agents',
+      'Machine Learning', 'Computer Vision', 'Data Science', 'Full-Stack Development',
+      'Python', 'TypeScript', 'React', 'Next.js', 'FastAPI', 'Cloud & Kubernetes',
+    ],
     links: [
       { label: 'GitHub', url: GITHUB },
       { label: 'Portfolio Repository', url: 'https://github.com/deepshah103/portfolio_animated' },
@@ -230,7 +235,7 @@ export const PORTFOLIO: Record<string, PortfolioSection> = {
       'Feel free to reach out for collaborations, engineering opportunities, AI/ML discussions, or interesting product ideas.',
     links: [
       { label: 'GitHub', url: GITHUB },
-      { label: 'LinkedIn', url: 'https://www.linkedin.com/in/deepshah/' },
+      { label: 'LinkedIn', url: 'https://www.linkedin.com/in/deepshah103/' },
     ],
   },
 
