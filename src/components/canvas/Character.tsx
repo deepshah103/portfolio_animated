@@ -16,10 +16,10 @@ const ROTATION_SPEED = 8;
 const AI_RETURN_DELAY = 10000;
 
 const ROOM_BOUNDS = {
-  minX: -6,
-  maxX: 6,
-  minZ: -5.5,
-  maxZ: 5.5,
+  minX: -6.5,
+  maxX: 6.5,
+  minZ: -6.5,
+  maxZ: 6.5,
 };
 
 const MODEL_PATH = assetPath('/models/character/scene.gltf');
@@ -31,8 +31,8 @@ const INTERACTION_POSES: Record<string, AIPose> = {
 };
 
 const INTERACTION_ANCHORS: Record<string, { position: [number, number, number]; rotationY: number }> = {
-  bed: { position: [4.5, 0, 3.72], rotationY: 0 },
-  couch: { position: [0, 0, 3], rotationY: 0 },
+  bed: { position: [4.8, 0, 4.0], rotationY: 0 },
+  couch: { position: [0, 0, 3.5], rotationY: 0 },
   'coffee-terminal': { position: [-3.45, 0, 4.1], rotationY: Math.PI / 2 },
 };
 
