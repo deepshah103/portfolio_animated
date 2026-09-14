@@ -89,7 +89,7 @@ export default function Home() {
           <span>Deep Shah · Software Engineer · Data Scientist · AI Builder</span>
           <div className="flex gap-4">
             <a className="hover:text-cyan-300" href="https://github.com/deepshah103" target="_blank" rel="noreferrer">GitHub</a>
-            <a className="hover:text-cyan-300" href="https://www.linkedin.com/in/deepshah/" target="_blank" rel="noreferrer">LinkedIn</a>
+            <a className="hover:text-cyan-300" href="https://www.linkedin.com/in/deepshah103/" target="_blank" rel="noreferrer">LinkedIn</a>
           </div>
         </footer>
       </div>
