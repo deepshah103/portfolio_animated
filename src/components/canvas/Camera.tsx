@@ -5,7 +5,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { Vector3 } from 'three';
 import { useGameStore } from '@/stores/gameStore';
 
-const WORLD_SCALE = 1.34;
+const WORLD_SCALE = 1.48;
 const LERP_FACTOR = 0.05;
 const INTRO_DURATION = 2200;
 const CAMERA_BOUNDS = {
@@ -14,7 +14,7 @@ const CAMERA_BOUNDS = {
   minZ: -10,
   maxZ: 13,
   minY: 0.4,
-  maxY: 8,
+  maxY: 9,
 };
 
 function clampCamera(pos: Vector3): Vector3 {
