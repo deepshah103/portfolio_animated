@@ -25,3 +25,31 @@ body:has(.flat-portfolio-page) {
   position: static;
   touch-action: pan-y;
 }
+
+
+/* Normal document scrolling for the landing and text portfolio pages.
+   The 3D /explore experience keeps the app-wide viewport lock. */
+html:has(.landing-page),
+html:has(.flat-portfolio-page) {
+  height: auto;
+  min-height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: static;
+  touch-action: pan-y;
+}
+
+body:has(.landing-page),
+body:has(.flat-portfolio-page) {
+  height: auto;
+  min-height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: static;
+  touch-action: pan-y;
+}
+
+.landing-page {
+  min-height: 100svh;
+  height: auto;
+}
