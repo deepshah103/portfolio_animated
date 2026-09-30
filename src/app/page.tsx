@@ -25,7 +25,7 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="relative min-h-[100dvh] overflow-hidden bg-slate-950 text-white">
+    <main className="landing-page relative min-h-[100svh] overflow-visible bg-slate-950 text-white">
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_25%,rgba(34,211,238,0.16),transparent_35%),radial-gradient(circle_at_15%_80%,rgba(99,102,241,0.18),transparent_32%),linear-gradient(135deg,#020617,#0f172a_55%,#111827)]" />
         <div className="absolute inset-0 opacity-20 bg-[linear-gradient(rgba(148,163,184,0.12)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.12)_1px,transparent_1px)] bg-[size:48px_48px]" />
